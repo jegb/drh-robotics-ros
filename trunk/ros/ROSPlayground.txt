@@ -1,0 +1,27 @@
+ROS Playground
+
+Location: ~/ros/Playground
+Add package path to ./.bashrc
+
+export ROS_PACKAGE_PATH=~/ros/playground:$ROS_PACKAGE_PATH
+
+The package currently contains one node:
+  arduino.py
+
+the node uses the file SerialDataGateway.py
+
+
+Running it:
+In a new terminal: roscore
+In a new terminal:
+   roscd playground
+   make
+   rosrun playground arduino.py
+
+In a new terminal:
+   rostopic echo /serial
+
+In a new terminal:
+   rxgraph
+
+
