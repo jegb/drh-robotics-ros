@@ -11,6 +11,8 @@
 #define OdometricLocalizer_h
 
 #include "QuadratureEncoder.h"
+#include "RobotParams.h"
+#include <TimeInfo.h>
 #include "WProgram.h"
 
 #define PI 3.14159265
@@ -19,12 +21,11 @@
 
 class OdometricLocalizer
 {
-	/*
-	*/
-
 private:
 	QuadratureEncoder* _pLeftEncoder;
 	QuadratureEncoder* _pRightEncoder;
+	RobotParams* _pRobotParams;
+	TimeInfo* _pTimeInfo;
 	float _DistancePerCount;
 	float _RadiansPerCount;
 	long _PreviousLeftCounts;
@@ -32,21 +33,23 @@ private:
 
 public:
 	// pinA and pinB must be one of the external interupt pins
-	OdometricLocalizer(QuadratureEncoder* pLeftEncoder, QuadratureEncoder* pRightEncoder, float wheelDiameter, float trackWidth, int countsPerRevolution)
+	OdometricLocalizer(QuadratureEncoder* pLeftEncoder, QuadratureEncoder* pRightEncoder, RobotParams* pRobotParams, TimeInfo* pTimeInfo)
 	{
 		_pLeftEncoder = pLeftEncoder;
 		_pRightEncoder = pRightEncoder;
-
-		_DistancePerCount = (PI * wheelDiameter) / (float)countsPerRevolution;
-		_RadiansPerCount = PI * (wheelDiameter / trackWidth) / countsPerRevolution;
+		_pRobotParams = pRobotParams;
+		_pTimeInfo = pTimeInfo;
 
 		_PreviousLeftCounts = _pLeftEncoder->GetPosition();
 		_PreviousRightCounts = pRightEncoder->GetPosition();
 	}
 
-	float X;
-	float Y;
-	float HeadingRad;
+	float X;  // x coord in global frame
+	float Y;  // y coord in global frame
+	float Heading;  // heading (radians) in the global frame. The value lies in (-PI, PI]
+	
+	float V;  // forward speed
+	float Omega;  // angular speed (radians per sec)
 
 	// Must be periodically called
 	void Update()
@@ -57,26 +60,29 @@ public:
 		long deltaLeft = leftCounts - _PreviousLeftCounts;
 		long deltaRight = rightCounts - _PreviousRightCounts;
 
-		float deltaDistance = 0.5f * (float)(deltaLeft + deltaRight) * _DistancePerCount;
-		float deltaX = deltaDistance * (float)cos(HeadingRad);
-		float deltaY = deltaDistance * (float)sin(HeadingRad);
-		float deltaHeading = (float)(deltaRight - deltaLeft) * _RadiansPerCount;
+		float deltaDistance = 0.5f * (float)(deltaLeft + deltaRight) * _pRobotParams->DistancePerCount;
+		float deltaX = deltaDistance * (float)cos(Heading);
+		float deltaY = deltaDistance * (float)sin(Heading);
+		float deltaHeading = (float)(deltaRight - deltaLeft) * _pRobotParams->RadiansPerCount;
 
 		X += deltaX;
 		Y += deltaY;
-		HeadingRad += deltaHeading;
+		Heading += deltaHeading;
 		// limit heading to -Pi <= heading < Pi
-		if (HeadingRad > PI)
+		if (Heading > PI)
 		{
-			HeadingRad -= TwoPI;
+			Heading -= TwoPI;
 		}
 		else
 		{
-			if (HeadingRad <= -PI)
+			if (Heading <= -PI)
 			{
-				HeadingRad += TwoPI;
+				Heading += TwoPI;
 			}
 		}
+		
+		V = deltaDistance / _pTimeInfo->SecondsSinceLastUpdate;
+		Omega = deltaHeading / _pTimeInfo->SecondsSinceLastUpdate;
 
 		_PreviousLeftCounts = leftCounts;
 		_PreviousRightCounts = rightCounts;

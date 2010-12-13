@@ -1,6 +1,9 @@
 #include "WProgram.h"
+#include <RobotParams.h>
+#include <TimeInfo.h>
 #include <QuadratureEncoder.h>
 #include <OdometricLocalizer.h>
+#include <SpeedController.h>
 #include <Servo.h> 
 #include "Psx_analog.h"      // Includes the Psx Library to access a Sony Playstation controller
 #include <Messenger.h>
@@ -14,6 +17,9 @@
 #define c_PsxClockPin 34
 
 Psx _Psx;
+// set robot params wheel diameter, trackwidth, counts per revolution
+RobotParams _RobotParams = RobotParams(0.075, 0.37, 19500);
+TimeInfo _TimeInfo = TimeInfo();
 Servo _RightServo;  // create servo object to control right motor
 Servo _LeftServo;  // create servo object to control left motor
 
@@ -23,7 +29,8 @@ QuadratureEncoder _LeftEncoder(18, 24, 26, false);
 // The quadrature encoder for the right motor uses external interupt 4 on pin 19 and the regular input at pin 25
 QuadratureEncoder _RightEncoder(19, 25, true);
 
-OdometricLocalizer _OdometricLocalizer(&_LeftEncoder, &_RightEncoder, 0.075, 0.37, 19500); 
+OdometricLocalizer _OdometricLocalizer(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
+SpeedController _SpeedController(0, 0, 0, &_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
 
 // Instantiate Messenger object with the message function and the default separator (the space character)
 Messenger _Messenger = Messenger(); 
@@ -48,16 +55,22 @@ void setup()
 void loop()
 {
   ReadSerial();
+  _TimeInfo.Update();
   _OdometricLocalizer.Update();
+  _SpeedController.Update(0, 0);
+  Serial.print(_OdometricLocalizer.X, 3);
+  Serial.print("\t");
+  Serial.print(_OdometricLocalizer.Y, 3);
+  Serial.print("\t");
+  Serial.print(_OdometricLocalizer.Heading, 3);
+  Serial.print("\t");
+  Serial.print(_OdometricLocalizer.V, 3);
+  Serial.print("\t");
+  Serial.print(_OdometricLocalizer.Omega, 3);
+  Serial.print("\t");
   Serial.print(_LeftEncoder.GetPosition());
   Serial.print("\t");
   Serial.print(_RightEncoder.GetPosition());
-  Serial.print("\t");
-  Serial.print(_OdometricLocalizer.X);
-  Serial.print("\t");
-  Serial.print(_OdometricLocalizer.Y);
-  Serial.print("\t");
-  Serial.print(_OdometricLocalizer.HeadingRad);
   Serial.print("\n");
 
   IssueCommands();
