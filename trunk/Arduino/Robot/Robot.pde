@@ -17,17 +17,17 @@
 #define c_PsxClockPin 34
 
 Psx _Psx;
-// set robot params wheel diameter, trackwidth, counts per revolution
-RobotParams _RobotParams = RobotParams(0.075, 0.37, 19500);
+// set robot params wheel diameter [m], trackwidth [m], counts per revolution
+RobotParams _RobotParams = RobotParams(0.0762, 0.37, 19500);
 TimeInfo _TimeInfo = TimeInfo();
 Servo _RightServo;  // create servo object to control right motor
 Servo _LeftServo;  // create servo object to control left motor
 
-// The quadrature encoder for the left motor uses external interupt 5 on pin 18 and the regular input at pin 24
-QuadratureEncoder _LeftEncoder(18, 24, 26, false);
+// The quadrature encoder for the right motor uses external interupt 5 on pin 18 and the regular input at pin 24
+QuadratureEncoder _RightEncoder(18, 24, 26, false);
 
-// The quadrature encoder for the right motor uses external interupt 4 on pin 19 and the regular input at pin 25
-QuadratureEncoder _RightEncoder(19, 25, true);
+// The quadrature encoder for the left motor uses external interupt 4 on pin 19 and the regular input at pin 25
+QuadratureEncoder _LeftEncoder(19, 25, true);
 
 OdometricLocalizer _OdometricLocalizer(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
 SpeedController _SpeedController(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
@@ -47,8 +47,8 @@ void setup()
   _RightServo.write(90);
   _LeftServo.write(90);
 
-  attachInterrupt(5, HandleLeftMotorInterruptA, CHANGE); // Pin 18 
-  attachInterrupt(4, HandleRightMotorInterruptA, CHANGE); // Pin 19
+  attachInterrupt(5, HandleRightMotorInterruptA, CHANGE); // Pin 18 
+  attachInterrupt(4, HandleLeftMotorInterruptA, CHANGE); // Pin 19
 
   _Messenger.attach(OnMssageCompleted);
 
@@ -63,6 +63,7 @@ void loop()
   _SpeedController.Update();
   IssueCommands();
   
+  Serial.print("o\t"); // o indicates odometry message
   Serial.print(_OdometricLocalizer.X, 3);
   Serial.print("\t");
   Serial.print(_OdometricLocalizer.Y, 3);
@@ -78,7 +79,7 @@ void loop()
   Serial.print(_RightEncoder.GetPosition());
   Serial.print("\n");
 
-  delay(10);
+  delay(500);
 }
 
 void IssueCommands()
@@ -127,15 +128,15 @@ void IssueCommands()
 
 
 // Interrupt service routines for the left motor's quadrature encoder
-void HandleLeftMotorInterruptA()
-{
-  _LeftEncoder.OnAChanged();
-}
-
-// Interrupt service routines for the right motor's quadrature encoder
 void HandleRightMotorInterruptA()
 {
   _RightEncoder.OnAChanged();
+}
+
+// Interrupt service routines for the right motor's quadrature encoder
+void HandleLeftMotorInterruptA()
+{
+  _LeftEncoder.OnAChanged();
 }
 
 

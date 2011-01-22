@@ -15,20 +15,20 @@
 class RobotParams
 {
 	public:
-		float WheelDiameter;
-		float TrackWidth;
-		float CountsPerRevolution;
-		float DistancePerCount;
-		float RadiansPerCount;
+		double WheelDiameter;
+		double TrackWidth;
+		double CountsPerRevolution;
+		double DistancePerCount;
+		double RadiansPerCount;
 
 
-		RobotParams(float wheelDiameter, float trackWidth, int countsPerRevolution)
+		RobotParams(double wheelDiameter, double trackWidth, int countsPerRevolution)
 		{
 			WheelDiameter = wheelDiameter;
 			TrackWidth = trackWidth;
 			CountsPerRevolution = countsPerRevolution;
 
-			DistancePerCount = (PI * wheelDiameter) / (float)countsPerRevolution;
+			DistancePerCount = (PI * wheelDiameter) / (double)countsPerRevolution;
 			RadiansPerCount = DistancePerCount / trackWidth;
 		}
 };

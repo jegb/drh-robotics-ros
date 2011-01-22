@@ -26,8 +26,8 @@ private:
 	QuadratureEncoder* _pRightEncoder;
 	RobotParams* _pRobotParams;
 	TimeInfo* _pTimeInfo;
-	float _DistancePerCount;
-	float _RadiansPerCount;
+	double _DistancePerCount;
+	double _RadiansPerCount;
 	long _PreviousLeftCounts;
 	long _PreviousRightCounts;
 
@@ -41,15 +41,15 @@ public:
 		_pTimeInfo = pTimeInfo;
 
 		_PreviousLeftCounts = _pLeftEncoder->GetPosition();
-		_PreviousRightCounts = pRightEncoder->GetPosition();
+		_PreviousRightCounts = _pRightEncoder->GetPosition();
 	}
 
-	float X;  // x coord in global frame
-	float Y;  // y coord in global frame
-	float Heading;  // heading (radians) in the global frame. The value lies in (-PI, PI]
+	double X;  // x coord in global frame
+	double Y;  // y coord in global frame
+	double Heading;  // heading (radians) in the global frame. The value lies in (-PI, PI]
 	
-	float V;  // forward speed
-	float Omega;  // angular speed (radians per sec)
+	double V;  // forward speed
+	double Omega;  // angular speed (radians per sec)
 
 	// Must be periodically called
 	void Update()
@@ -60,10 +60,10 @@ public:
 		long deltaLeft = leftCounts - _PreviousLeftCounts;
 		long deltaRight = rightCounts - _PreviousRightCounts;
 
-		float deltaDistance = 0.5f * (float)(deltaLeft + deltaRight) * _pRobotParams->DistancePerCount;
-		float deltaX = deltaDistance * (float)cos(Heading);
-		float deltaY = deltaDistance * (float)sin(Heading);
-		float deltaHeading = (float)(deltaRight - deltaLeft) * _pRobotParams->RadiansPerCount;
+		double deltaDistance = 0.5f * (double)(deltaLeft + deltaRight) * _pRobotParams->DistancePerCount;
+		double deltaX = deltaDistance * (double)cos(Heading);
+		double deltaY = deltaDistance * (double)sin(Heading);
+		double deltaHeading = (double)(deltaRight - deltaLeft) * _pRobotParams->RadiansPerCount;
 
 		X += deltaX;
 		Y += deltaY;
