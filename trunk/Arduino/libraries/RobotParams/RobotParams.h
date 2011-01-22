@@ -29,7 +29,7 @@ class RobotParams
 			CountsPerRevolution = countsPerRevolution;
 
 			DistancePerCount = (PI * wheelDiameter) / (float)countsPerRevolution;
-			RadiansPerCount = DistancePerCount / (trackWidth / 2.0);
+			RadiansPerCount = DistancePerCount / trackWidth;
 		}
 };
 
