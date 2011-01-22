@@ -34,6 +34,7 @@ Created January, 2011
 import roslib; roslib.load_manifest('playground')
 import rospy
 import tf
+import math
 from math import sin, cos, pi
 
 from geometry_msgs.msg import Quaternion
@@ -50,7 +51,7 @@ class Arduino(object):
 	'''
 
 	def _HandleReceivedLine(self,  line):
-		rospy.loginfo(line)
+		rospy.logdebug(line)
 		self._Publisher.publish(String(line))
 		
 		if (len(line) > 0):
@@ -137,7 +138,7 @@ class Arduino(object):
 		""" Handle movement requests. """
 		v = twistCommand.linear.x        # m/s
 		omega = twistCommand.angular.z      # rad/s
-		rospy.logdebug("Handling twist command: " + str(v) + "," + str(omega))
+		rospy.loginfo("Handling twist command: " + str(v) + "," + str(omega))
 
 		message = 'Speed %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
 		rospy.logdebug("Sending speed command message: " + message)
