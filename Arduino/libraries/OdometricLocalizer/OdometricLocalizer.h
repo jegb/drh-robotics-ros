@@ -12,7 +12,7 @@
 
 #include "QuadratureEncoder.h"
 #include "RobotParams.h"
-#include <TimeInfo.h>
+#include "TimeInfo.h"
 #include "WProgram.h"
 
 #define PI 3.14159265

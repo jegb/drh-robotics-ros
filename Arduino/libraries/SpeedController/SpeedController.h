@@ -19,6 +19,9 @@ private:
 	float _PParam, _IParam, _DParam;
 	QuadratureEncoder* _pLeftEncoder;
 	QuadratureEncoder* _pRightEncoder;
+	long _PreviousLeftCounts;
+	long _PreviousRightCounts;
+
 	RobotParams* _pRobotParams;
 	TimeInfo* _pTimeInfo;
 
@@ -26,42 +29,74 @@ private:
 	float _ErrorIntegralAcrossWheels;
 	
 public:
-
-	SpeedController(float pParam, float iParam, float dParam, QuadratureEncoder* pLeftEncoder, QuadratureEncoder* pRightEncoder, RobotParams* pRobotParams, TimeInfo* pTimeInfo)
-	{
-		_PParam = pParam;
-		_IParam = iParam;
-		_DParam = dParam;
-
-		_pLeftEncoder = pLeftEncoder;
-		_pRightEncoder = pRightEncoder;
-
-		_pRobotParams = pRobotParams;
-		_pTimeInfo = pTimeInfo;
-	}
 	
+	float PParam;
+	float IParam;
+	float DParam;
+
+	float DesiredVelocity;
+	float DesiredAngularVelocity;
+
 	// normalized control values for the left and right motor
 	float NormalizedLeftCV;
 	float NormalizedRightCV;
-	
-	void Update(float desiredVelocity, float desiredAngularVelocity)
+
+	SpeedController(QuadratureEncoder* pLeftEncoder, QuadratureEncoder* pRightEncoder, RobotParams* pRobotParams, TimeInfo* pTimeInfo)
 	{
-		float angularVelocityCountsOffset = desiredAngularVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->RadiansPerCount;
-		float expectedBaseCounts = desiredVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->DistancePerCount;
+		_pLeftEncoder = pLeftEncoder;
+		_pRightEncoder = pRightEncoder;
+		_PreviousLeftCounts = _pLeftEncoder->GetPosition();
+		_PreviousRightCounts = pRightEncoder->GetPosition();
+
+		_pRobotParams = pRobotParams;
+		_pTimeInfo = pTimeInfo;
+
+		PParam = 0.0;
+		IParam = 0.0;
+		DParam = 0.0;
+
+		DesiredVelocity = 0.0;
+		DesiredAngularVelocity = 0.0;
+	}
+	
+	void Update()
+	{
+		float angularVelocityCountsOffset = DesiredAngularVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->RadiansPerCount;
+		float expectedBaseCounts = DesiredVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->DistancePerCount;
 		
 		float expectedLeftCount = expectedBaseCounts - angularVelocityCountsOffset;
 		float expectedRightCount = expectedBaseCounts + angularVelocityCountsOffset;
 		
-		float leftError = expectedLeftCount - (float)_pLeftEncoder->GetPosition();
-		float rightError = expectedLeftCount - (float)_pLeftEncoder->GetPosition();
+		long leftCounts = _pLeftEncoder->GetPosition();
+		long rightCounts = _pRightEncoder->GetPosition();
+
+		long deltaLeft = leftCounts - _PreviousLeftCounts;
+		long deltaRight = rightCounts - _PreviousRightCounts;
+
+		_PreviousLeftCounts = leftCounts;
+		_PreviousRightCounts = rightCounts;
+
+		float leftError = expectedLeftCount - (float)deltaLeft;
+		float rightError = expectedLeftCount - (float)deltaRight;
 		
-		float errorAcrossWheels = (float)_pLeftEncoder->GetPosition() - (float)_pLeftEncoder->GetPosition() + 2 * angularVelocityCountsOffset;
-		_ErrorIntegralAcrossWheels = errorAcrossWheels * _pTimeInfo->SecondsSinceLastUpdate;
+		float errorAcrossWheels = (float)deltaLeft - (float)deltaRight + 2 * angularVelocityCountsOffset;
+		_ErrorIntegralAcrossWheels += errorAcrossWheels * _pTimeInfo->SecondsSinceLastUpdate;
 		
-		NormalizedLeftCV = _PParam * leftError + _DParam * (leftError - _LastLeftError) - _IParam * _ErrorIntegralAcrossWheels;
+		// in order to avoid adding up an ever increasing integral term we cap it so that the integral contribution is never greater than the max CV
+		float integralContribution = IParam * _ErrorIntegralAcrossWheels;
+		if (integralContribution > 1.0)
+		{
+			integralContribution = 1.0;
+		}
+		else if (integralContribution < -1.0)
+		{
+			integralContribution = -1.0;
+		}
+		
+		NormalizedLeftCV = PParam * leftError + DParam * (leftError - _LastLeftError) - integralContribution;
 		NormalizedLeftCV = constrain(NormalizedLeftCV, -1, +1);
 
-		NormalizedRightCV = _PParam * rightError + _DParam * (rightError - _LastRightError) + _IParam * _ErrorIntegralAcrossWheels;
+		NormalizedRightCV = PParam * rightError + DParam * (rightError - _LastRightError) + integralContribution;
 		NormalizedRightCV = constrain(NormalizedRightCV, -1, +1);
 		
 		_LastLeftError = leftError;
