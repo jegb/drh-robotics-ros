@@ -27,7 +27,7 @@ rxgraph
 
 Manually publish speed command
 In a new terminal:
-rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '{ linear: { x: 0, y: 0, z: 0 }, angular: { x: 0, y: 0, z: 0}  }'
+rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '{ linear: { x: 0.02, y: 0, z: 0 }, angular: { x: 0, y: 0, z: 0}  }'
 
 -1 means: just one message is published
 
@@ -38,5 +38,5 @@ rxplot /odom/pose/pose/position/x  /odom/pose/pose/position/y
 
 Showing an invoking service
 rosservice list
-rosservice call /setDriveControlGains 1 2 3
+rosservice call /setDriveControlGains 1 0 0
 
