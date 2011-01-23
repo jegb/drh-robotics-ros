@@ -36,12 +36,13 @@ import rospy
 import tf
 import math
 from math import sin, cos, pi
+import sys
 
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
-from playground.msg import Encoder
+from playground.srv import *
 
 from SerialDataGateway import SerialDataGateway
 
@@ -55,58 +56,64 @@ class Arduino(object):
 		self._Publisher.publish(String(line))
 		
 		if (len(line) > 0):
-			self._BroadcastOdometryInfo(line)
+			lineParts = line.split('\t')
+			if (lineParts[0] == 'o'):
+				self._BroadcastOdometryInfo(lineParts)
 		
-	def _BroadcastOdometryInfo(self, line):
-		lineParts = line.split('\t')
+	def _BroadcastOdometryInfo(self, lineParts):
 		partsCount = len(lineParts)
 		#rospy.logwarn(partsCount)
-		if (partsCount  < 5):
+		if (partsCount  < 6):
 			pass
 		
-		x = float(lineParts[0])
-		y = float(lineParts[1])
-		theta = float(lineParts[2])
+		try:
+			x = float(lineParts[1])
+			y = float(lineParts[2])
+			theta = float(lineParts[3])
+			
+			vx = float(lineParts[4])
+			omega = float(lineParts[5])
 		
-		vx = float(lineParts[3])
-		omega = float(lineParts[4])
-		
-		#quaternion = tf.transformations.quaternion_about_axis(theta, (0,0,1))
-		quaternion = Quaternion()
-		quaternion.x = 0.0 
-		quaternion.y = 0.0
-		quaternion.z = sin(theta / 2.0)
-		quaternion.w = cos(theta / 2.0)
-		
-		
-		rosNow = rospy.Time.now()
-		
-		# first, we'll publish the transform over tf
-		self._OdometryTransformBroadcaster.sendTransform(
-			(x, y, 0), 
-			(quaternion.x, quaternion.y, quaternion.z, quaternion.w),
-			rosNow,
-			"base_link",
-			"odom"
-			)
+			#quaternion = tf.transformations.quaternion_about_axis(theta, (0,0,1))
+			quaternion = Quaternion()
+			quaternion.x = 0.0 
+			quaternion.y = 0.0
+			quaternion.z = sin(theta / 2.0)
+			quaternion.w = cos(theta / 2.0)
+			
+			
+			rosNow = rospy.Time.now()
+			
+			# first, we'll publish the transform over tf
+			self._OdometryTransformBroadcaster.sendTransform(
+				(x, y, 0), 
+				(quaternion.x, quaternion.y, quaternion.z, quaternion.w),
+				rosNow,
+				"base_link",
+				"odom"
+				)
 
-		# next, we'll publish the odometry message over ROS
-		odometry = Odometry()
-		odometry.header.frame_id = "odom"
-		odometry.header.stamp = rosNow
-		odometry.pose.pose.position.x = x
-		odometry.pose.pose.position.y = y
-		odometry.pose.pose.position.z = 0
-		odometry.pose.pose.orientation = quaternion
+			# next, we'll publish the odometry message over ROS
+			odometry = Odometry()
+			odometry.header.frame_id = "odom"
+			odometry.header.stamp = rosNow
+			odometry.pose.pose.position.x = x
+			odometry.pose.pose.position.y = y
+			odometry.pose.pose.position.z = 0
+			odometry.pose.pose.orientation = quaternion
 
-		odometry.child_frame_id = "base_link"
-		odometry.twist.twist.linear.x = vx
-		odometry.twist.twist.linear.y = 0
-		odometry.twist.twist.angular.z = omega
+			odometry.child_frame_id = "base_link"
+			odometry.twist.twist.linear.x = vx
+			odometry.twist.twist.linear.y = 0
+			odometry.twist.twist.angular.z = omega
 
-		self._OdometryPublisher.publish(odometry)
+			self._OdometryPublisher.publish(odometry)
+			
+			#rospy.loginfo(odometry)
 		
-		#rospy.loginfo(odometry)
+		except:
+			rospy.logwarn("Unexpected error:" + str(sys.exc_info()[0]))
+
 
 	def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
 		'''
@@ -115,16 +122,23 @@ class Arduino(object):
 		baudrate: Baud rate for the serial communication
 		'''
 
+		rospy.init_node('arduino')
+
+		port = rospy.get_param("~port", "/dev/ttyUSB0")
+		baudRate = int(rospy.get_param("~baudRate", 115200))
+
+		rospy.loginfo("Starting with serial port: " + port + ", baud rate: " + str(baudRate))
+
 		# subscriptions
 		rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand)
 		self._Publisher = rospy.Publisher('serial', String)
 
 		self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
 		self._OdometryPublisher = rospy.Publisher("odom", Odometry)
+		
+		self._SetDriveGainsService = rospy.Service('setDriveControlGains', SetDriveControlGains, self._HandleSetDriveGains)
 
-		rospy.init_node('arduino')
-
-		self._SerialDataGateway = SerialDataGateway(port, baudrate,  self._HandleReceivedLine)
+		self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
 
 	def Start(self):
 		rospy.logdebug("Starting")
@@ -143,6 +157,16 @@ class Arduino(object):
 		message = 'Speed %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
+		
+	def _HandleSetDriveGains(self, request):
+		""" Handle the setting of the drive gains (PID). """
+		driveGains = (request.kp, request.ki, request.kd)
+		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
+
+		message = 'g %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
+		rospy.loginfo("Sending set drive gains command message: " + message)
+		self._SerialDataGateway.Write(message)
+		return SetDriveControlGainsResponse()
 
 	def _GetBaseAndExponent(self, floatValue, resolution=4):
 		'''
@@ -179,7 +203,7 @@ class Arduino(object):
 
 
 if __name__ == '__main__':
-	arduino = Arduino("/dev/ttyUSB0", 115200)
+	arduino = Arduino()
 	try:
 		arduino.Start()
 		rospy.spin()
