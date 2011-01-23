@@ -52,6 +52,8 @@ void setup()
 
   _Messenger.attach(OnMssageCompleted);
 
+  _RightServo.write(90);
+  _LeftServo.write(90);
   delay(100);
 }
 
@@ -79,7 +81,7 @@ void loop()
   Serial.print(_RightEncoder.GetPosition());
   Serial.print("\n");
 
-  delay(500);
+  delay(1000);
 }
 
 void IssueCommands()
@@ -151,15 +153,15 @@ void ReadSerial()
 // Define messenger function
 void OnMssageCompleted()
 {
-  if (_Messenger.checkString("Speed"))
+  if (_Messenger.checkString("s"))
   {
     SetSpeed();
     return;
   }
 
-  if (_Messenger.checkString("ConfigController"))
+  if (_Messenger.checkString("g"))
   {
-    ConfigSpeedController();
+    SetSpeedControllerGains();
     return;
   }
 
@@ -176,7 +178,7 @@ void SetSpeed()
   _SpeedController.DesiredAngularVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
 }
 
-void ConfigSpeedController()
+void SetSpeedControllerGains()
 {
   _SpeedController.PParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _SpeedController.IParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
