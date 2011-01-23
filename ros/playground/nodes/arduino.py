@@ -154,7 +154,7 @@ class Arduino(object):
 		omega = twistCommand.angular.z      # rad/s
 		rospy.loginfo("Handling twist command: " + str(v) + "," + str(omega))
 
-		message = 'Speed %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
+		message = 's %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
 		
