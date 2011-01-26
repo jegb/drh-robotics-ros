@@ -143,6 +143,8 @@ class Arduino(object):
 	def Start(self):
 		rospy.logdebug("Starting")
 		self._SerialDataGateway.Start()
+		
+		self._InitializeDriveMotorGains()
 
 	def Stop(self):
 		rospy.logdebug("Stopping")
@@ -157,16 +159,32 @@ class Arduino(object):
 		message = 's %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
-		
+
+	def _InitializeDriveMotorGains(self):
+		kp = rospy.get_param("~driveMotorGains/kp", "0")
+		ki = rospy.get_param("~driveMotorGains/ki", "0")
+		kd = rospy.get_param("~driveMotorGains/kd", "0")
+
+		driveGains = (kp, ki, kd)
+		self._WriteDriveGains(driveGains)
+
 	def _HandleSetDriveGains(self, request):
 		""" Handle the setting of the drive gains (PID). """
+		
+		# We persist the new values in the parameter server
+		rospy.set_param("~driveMotorGains", {'kp': request.kp, 'ki': request.ki, 'kd': request.kd})
+		
 		driveGains = (request.kp, request.ki, request.kd)
-		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
+		self._WriteDriveGains(driveGains)
+		return SetDriveControlGainsResponse()
 
+	def _WriteDriveGains(self, driveGains):
+		""" Writes the drive gains (PID) to the Arduino controller. """
+		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
+		
 		message = 'g %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
 		rospy.loginfo("Sending set drive gains command message: " + message)
 		self._SerialDataGateway.Write(message)
-		return SetDriveControlGainsResponse()
 
 	def _GetBaseAndExponent(self, floatValue, resolution=4):
 		'''
