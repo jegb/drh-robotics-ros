@@ -5,18 +5,18 @@
 #include <OdometricLocalizer.h>
 #include <SpeedController.h>
 #include <Servo.h> 
-#include "Psx_analog.h"      // Includes the Psx Library to access a Sony Playstation controller
+//#include "Psx_analog.h"      // Includes the Psx Library to access a Sony Playstation controller
 #include <Messenger.h>
 
 #define c_MaxSpeed 30.0   // range is 0 ... 90 (half servo range)
 
 // Sony Playstation 2 Controller
-#define c_PsxDataPin 36
-#define c_PsxCommandPin 35
-#define c_PsxAttPin 33
-#define c_PsxClockPin 34
+//#define c_PsxDataPin 36
+//#define c_PsxCommandPin 35
+//#define c_PsxAttPin 33
+//#define c_PsxClockPin 34
+//Psx _Psx;
 
-Psx _Psx;
 // set robot params wheel diameter [m], trackwidth [m], counts per revolution
 RobotParams _RobotParams = RobotParams(0.0762, 0.37, 19500);
 TimeInfo _TimeInfo = TimeInfo();
@@ -33,13 +33,15 @@ OdometricLocalizer _OdometricLocalizer(&_LeftEncoder, &_RightEncoder, &_RobotPar
 SpeedController _SpeedController(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
 
 // Instantiate Messenger object with the message function and the default separator (the space character)
-Messenger _Messenger = Messenger(); 
+Messenger _Messenger = Messenger();
+
+bool _IsInitialized = false;
 
 void setup()
 {
   Serial.begin(115200);
-  _Psx.setupPins(c_PsxDataPin, c_PsxCommandPin, c_PsxAttPin, c_PsxClockPin);  // Defines what each pin is used (Data Pin #, Cmnd Pin #, Att Pin #, Clk Pin #)
-  _Psx.initcontroller(psxAnalog);
+  //_Psx.setupPins(c_PsxDataPin, c_PsxCommandPin, c_PsxAttPin, c_PsxClockPin);  // Defines what each pin is used (Data Pin #, Cmnd Pin #, Att Pin #, Clk Pin #)
+  //_Psx.initcontroller(psxAnalog);
   
   _RightServo.attach(2);  // attaches the servo on specified pin to the servo object 
   _LeftServo.attach(3);  // attaches the servo on specified pin to the servo object
@@ -60,11 +62,26 @@ void setup()
 void loop()
 {
   ReadSerial();
+  
+  if (_IsInitialized)
+  {
+    DoWork();
+  }
+  else
+  {
+    RequestInitialization();
+  }
+
+  delay(1000);
+}
+
+void DoWork()
+{
   _TimeInfo.Update();
   _OdometricLocalizer.Update();
   _SpeedController.Update();
   IssueCommands();
-  
+    
   Serial.print("o\t"); // o indicates odometry message
   Serial.print(_OdometricLocalizer.X, 3);
   Serial.print("\t");
@@ -80,8 +97,12 @@ void loop()
   Serial.print("\t");
   Serial.print(_RightEncoder.GetPosition());
   Serial.print("\n");
+}
 
-  delay(1000);
+void RequestInitialization()
+{
+    Serial.print("ni"); // sending 'n'ot 'i'nialized indicator
+    Serial.print("\n");
 }
 
 void IssueCommands()
@@ -183,6 +204,8 @@ void SetSpeedControllerGains()
   _SpeedController.PParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _SpeedController.IParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _SpeedController.DParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  
+  _IsInitialized = true;
 
   Serial.print("PID Params: ");
   Serial.print(_SpeedController.PParam);

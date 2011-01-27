@@ -59,7 +59,11 @@ class Arduino(object):
 			lineParts = line.split('\t')
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
-		
+				return
+			if (lineParts[0] == "ni"):
+				# controller requesting initialization
+				self._InitializeDriveMotorGains()
+
 	def _BroadcastOdometryInfo(self, lineParts):
 		partsCount = len(lineParts)
 		#rospy.logwarn(partsCount)
@@ -143,8 +147,6 @@ class Arduino(object):
 	def Start(self):
 		rospy.logdebug("Starting")
 		self._SerialDataGateway.Start()
-		
-		self._InitializeDriveMotorGains()
 
 	def Stop(self):
 		rospy.logdebug("Stopping")
