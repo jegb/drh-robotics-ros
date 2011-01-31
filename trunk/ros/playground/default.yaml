@@ -1,4 +1,4 @@
 port: /dev/ttyUSB0
 baudRate: 115200
-driveMotorGains: {kp: 0, ki: 0, kd: 0} 
+driveMotorGains: {kp: 0.1, ki: 0.1, kd: 0.0} 
 
