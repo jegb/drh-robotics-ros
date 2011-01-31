@@ -14,7 +14,7 @@ class TimeInfo
 {
 	public:
 		unsigned long LastUpdateMicrosecs;		
-		//unsigned long LastUpdateMillisecs;
+		unsigned long LastUpdateMillisecs;
 		unsigned long CurrentMicrosecs;
 		//unsigned long CurrentMillisecs;
 		unsigned long MicrosecsSinceLastUpdate;
@@ -32,6 +32,7 @@ class TimeInfo
 		void Update()
 		{
 			CurrentMicrosecs = micros();
+			LastUpdateMillisecs = millis();
 			// this rolls over after roughly 70 minutes at the max ulong value 4,294,967,295
 			MicrosecsSinceLastUpdate = CurrentMicrosecs - LastUpdateMicrosecs;
 			if (MicrosecsSinceLastUpdate < 0)

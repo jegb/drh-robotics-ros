@@ -17,16 +17,28 @@ class SpeedController
 {
 private:
 	float _PParam, _IParam, _DParam;
-	QuadratureEncoder* _pLeftEncoder;
-	QuadratureEncoder* _pRightEncoder;
-	long _PreviousLeftCounts;
-	long _PreviousRightCounts;
+	OdometricLocalizer* _pOdometricLocalizer;
 
 	RobotParams* _pRobotParams;
 	TimeInfo* _pTimeInfo;
 
 	float _LastLeftError, _LastRightError;
-	float _ErrorIntegralAcrossWheels;
+
+	float _LeftErrorIntegral;
+	float _RightErrorIntegral;
+	//float _ErrorIntegralAcrossWheels;
+
+	float ClipIntegralContribution(float integralContribution)
+	{
+		if (integralContribution > 1.0)
+		{
+			return 1.0;
+		}
+		else if (integralContribution < -1.0)
+		{
+			return -1.0;
+		}
+	} 
 	
 public:
 	
@@ -37,16 +49,16 @@ public:
 	float DesiredVelocity;
 	float DesiredAngularVelocity;
 
+	float LeftError;
+	float RightError;
+
 	// normalized control values for the left and right motor
 	float NormalizedLeftCV;
 	float NormalizedRightCV;
 
-	SpeedController(QuadratureEncoder* pLeftEncoder, QuadratureEncoder* pRightEncoder, RobotParams* pRobotParams, TimeInfo* pTimeInfo)
+	SpeedController(OdometricLocalizer* pOdometricLocalizer, RobotParams* pRobotParams, TimeInfo* pTimeInfo)
 	{
-		_pLeftEncoder = pLeftEncoder;
-		_pRightEncoder = pRightEncoder;
-		_PreviousLeftCounts = _pLeftEncoder->GetPosition();
-		_PreviousRightCounts = pRightEncoder->GetPosition();
+		_pOdometricLocalizer = pOdometricLocalizer;
 
 		_pRobotParams = pRobotParams;
 		_pTimeInfo = pTimeInfo;
@@ -61,46 +73,36 @@ public:
 	
 	void Update()
 	{
-		float angularVelocityCountsOffset = DesiredAngularVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->RadiansPerCount;
-		float expectedBaseCounts = DesiredVelocity * _pTimeInfo->SecondsSinceLastUpdate / _pRobotParams->DistancePerCount;
+		float angularVelocityOffset = 0.5 * DesiredAngularVelocity * _pRobotParams->TrackWidth;
 		
-		float expectedLeftCount = expectedBaseCounts - angularVelocityCountsOffset;
-		float expectedRightCount = expectedBaseCounts + angularVelocityCountsOffset;
-		
-		long leftCounts = _pLeftEncoder->GetPosition();
-		long rightCounts = _pRightEncoder->GetPosition();
+		float expectedLeftSpeed = DesiredVelocity - angularVelocityOffset;
+		float expectedRightSpeed = DesiredVelocity + angularVelocityOffset;
 
-		long deltaLeft = leftCounts - _PreviousLeftCounts;
-		long deltaRight = rightCounts - _PreviousRightCounts;
+		LeftError = expectedLeftSpeed - _pOdometricLocalizer->VLeft;
+		RightError = expectedRightSpeed - _pOdometricLocalizer->VRight;
 
-		_PreviousLeftCounts = leftCounts;
-		_PreviousRightCounts = rightCounts;
+		_LeftErrorIntegral += LeftError;
+		_RightErrorIntegral += RightError;
 
-		float leftError = expectedLeftCount - (float)deltaLeft;
-		float rightError = expectedLeftCount - (float)deltaRight;
+		// Avoiding runaway integral error contributions
+		float maxIntegralValue = 1.0 / IParam;
+		_LeftErrorIntegral = constrain(_LeftErrorIntegral, -maxIntegralValue, +maxIntegralValue);
+		_RightErrorIntegral = constrain(_RightErrorIntegral, -maxIntegralValue, +maxIntegralValue);
+
+		float leftErrorDifferential = (LeftError - _LastLeftError);
+		float rightErrorDifferential = (RightError - _LastRightError);
 		
-		float errorAcrossWheels = (float)deltaLeft - (float)deltaRight + 2 * angularVelocityCountsOffset;
-		_ErrorIntegralAcrossWheels += errorAcrossWheels * _pTimeInfo->SecondsSinceLastUpdate;
+		//float errorAcrossWheels = _pOdometricLocalizer->VLeft - _pOdometricLocalizer->VRight + 2 * angularVelocityOffset;
+		//_ErrorIntegralAcrossWheels += errorAcrossWheels * _pTimeInfo->SecondsSinceLastUpdate;
 		
-		// in order to avoid adding up an ever increasing integral term we cap it so that the integral contribution is never greater than the max CV
-		float integralContribution = IParam * _ErrorIntegralAcrossWheels;
-		if (integralContribution > 1.0)
-		{
-			integralContribution = 1.0;
-		}
-		else if (integralContribution < -1.0)
-		{
-			integralContribution = -1.0;
-		}
-		
-		NormalizedLeftCV = PParam * leftError + DParam * (leftError - _LastLeftError) - integralContribution;
+		NormalizedLeftCV = PParam * LeftError + DParam * leftErrorDifferential + IParam * _LeftErrorIntegral;
 		NormalizedLeftCV = constrain(NormalizedLeftCV, -1, +1);
 
-		NormalizedRightCV = PParam * rightError + DParam * (rightError - _LastRightError) + integralContribution;
+		NormalizedRightCV = PParam * RightError + DParam * rightErrorDifferential + IParam * _RightErrorIntegral;
 		NormalizedRightCV = constrain(NormalizedRightCV, -1, +1);
 		
-		_LastLeftError = leftError;
-		_LastRightError = rightError;
+		_LastLeftError = LeftError;
+		_LastRightError = RightError;
 	}
 };
 
