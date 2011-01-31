@@ -9,9 +9,9 @@
                                // see http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1267553811/0
                                // and http://code.google.com/p/digitalwritefast/
 
-// It turns out that regular digitalRead() calls are too slow and bring the arduino down when
-// I use them in the interrupt routines when the motor runs at full speed which results in 
-// more than 40000 ticks per second per motor. 
+// It turns out that the regular digitalRead() calls are too slow and bring the arduino down when
+// used in the interrupt routines while the motor is running at full speed creating more than
+// 40000 encoder ticks per second per motor.
 
 #define c_UpdateInterval 20 // update interval in milli seconds
 #define c_MaxMotorCV 30   // range is 0 ... 89 (half servo range)
