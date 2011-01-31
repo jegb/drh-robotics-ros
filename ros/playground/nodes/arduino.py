@@ -52,8 +52,10 @@ class Arduino(object):
 	'''
 
 	def _HandleReceivedLine(self,  line):
-		rospy.logdebug(line)
-		self._Publisher.publish(String(line))
+		self._Counter = self._Counter + 1
+		#rospy.logdebug(str(self._Counter) + " " + line)
+		if (self._Counter % 50 == 0):
+			self._Publisher.publish(String(str(self._Counter) + " " + line))
 		
 		if (len(line) > 0):
 			lineParts = line.split('\t')
@@ -125,6 +127,8 @@ class Arduino(object):
 		port: The serial port to listen to.
 		baudrate: Baud rate for the serial communication
 		'''
+
+		self._Counter = 0
 
 		rospy.init_node('arduino')
 

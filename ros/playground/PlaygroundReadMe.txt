@@ -15,6 +15,8 @@ add grid add tf
 
 In a new terminal:
 rostopic echo /odom
+or
+rostopic echo /serial
 
 or to get the frequency of messages being sent:
 
@@ -39,4 +41,8 @@ rxplot /odom/pose/pose/position/x  /odom/pose/pose/position/y
 Showing an invoking service
 rosservice list
 rosservice call /setDriveControlGains 1 0 0
+
+
+
+rosparam list
 
