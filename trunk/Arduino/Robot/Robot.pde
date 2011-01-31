@@ -1,36 +1,48 @@
 #include "WProgram.h"
 #include <RobotParams.h>
 #include <TimeInfo.h>
-#include <QuadratureEncoder.h>
 #include <OdometricLocalizer.h>
 #include <SpeedController.h>
 #include <Servo.h> 
-//#include "Psx_analog.h"      // Includes the Psx Library to access a Sony Playstation controller
 #include <Messenger.h>
+#include <digitalWriteFast.h>  // library for high performance reads and writes by jrraines
+                               // see http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1267553811/0
+                               // and http://code.google.com/p/digitalwritefast/
 
-#define c_MaxSpeed 30.0   // range is 0 ... 90 (half servo range)
+// It turns out that regular digitalRead() calls are too slow and bring the arduino down when
+// I use them in the interrupt routines when the motor runs at full speed which results in 
+// more than 40000 ticks per second per motor. 
 
-// Sony Playstation 2 Controller
-//#define c_PsxDataPin 36
-//#define c_PsxCommandPin 35
-//#define c_PsxAttPin 33
-//#define c_PsxClockPin 34
-//Psx _Psx;
+#define c_UpdateInterval 20 // update interval in milli seconds
+#define c_MaxMotorCV 30   // range is 0 ... 89 (half servo range)
 
-// set robot params wheel diameter [m], trackwidth [m], counts per revolution
-RobotParams _RobotParams = RobotParams(0.0762, 0.37, 19500);
+// set robot params wheel diameter [m], trackwidth [m], ticks per revolution
+RobotParams _RobotParams = RobotParams(0.0762, 0.37, 9750);
 TimeInfo _TimeInfo = TimeInfo();
 Servo _RightServo;  // create servo object to control right motor
 Servo _LeftServo;  // create servo object to control left motor
 
-// The quadrature encoder for the right motor uses external interupt 5 on pin 18 and the regular input at pin 24
-QuadratureEncoder _RightEncoder(18, 24, 26, false);
+// Quadrature encoders
+// Left encoder
+#define c_LeftEncoderInterrupt 4
+#define c_LeftEncoderPinA 19
+#define c_LeftEncoderPinB 25
+#define c_LeftEncoderIsReversed true
+volatile bool _LeftEncoderASet;
+volatile bool _LeftEncoderBSet;
+volatile long _LeftEncoderTicks = 0;
 
-// The quadrature encoder for the left motor uses external interupt 4 on pin 19 and the regular input at pin 25
-QuadratureEncoder _LeftEncoder(19, 25, true);
+// Right encoder
+#define c_RightEncoderInterrupt 5
+#define c_RightEncoderPinA 18
+#define c_RightEncoderPinB 24
+#define c_RightEncoderIsReversed false
+volatile bool _RightEncoderASet;
+volatile bool _RightEncoderBSet;
+volatile long _RightEncoderTicks = 0;
 
-OdometricLocalizer _OdometricLocalizer(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
-SpeedController _SpeedController(&_LeftEncoder, &_RightEncoder, &_RobotParams, &_TimeInfo);
+OdometricLocalizer _OdometricLocalizer(&_RobotParams, &_TimeInfo);
+SpeedController _SpeedController(&_OdometricLocalizer, &_RobotParams, &_TimeInfo);
 
 // Instantiate Messenger object with the message function and the default separator (the space character)
 Messenger _Messenger = Messenger();
@@ -40,45 +52,68 @@ bool _IsInitialized = false;
 void setup()
 {
   Serial.begin(115200);
-  //_Psx.setupPins(c_PsxDataPin, c_PsxCommandPin, c_PsxAttPin, c_PsxClockPin);  // Defines what each pin is used (Data Pin #, Cmnd Pin #, Att Pin #, Clk Pin #)
-  //_Psx.initcontroller(psxAnalog);
-  
-  _RightServo.attach(2);  // attaches the servo on specified pin to the servo object 
-  _LeftServo.attach(3);  // attaches the servo on specified pin to the servo object
-  
-  _RightServo.write(90);
-  _LeftServo.write(90);
 
-  attachInterrupt(5, HandleRightMotorInterruptA, CHANGE); // Pin 18 
-  attachInterrupt(4, HandleLeftMotorInterruptA, CHANGE); // Pin 19
+  SetupEncoders();
 
   _Messenger.attach(OnMssageCompleted);
 
+  _RightServo.attach(2);  // attaches the servo on specified pin to the servo object 
+  _LeftServo.attach(3);  // attaches the servo on specified pin to the servo object
   _RightServo.write(90);
   _LeftServo.write(90);
+
   delay(100);
+  _TimeInfo.Update();
+}
+
+void SetupEncoders()
+{
+  // Quadrature encoders
+  // Left encoder
+  pinMode(c_LeftEncoderPinA, INPUT);      // sets pin A as input
+  digitalWrite(c_LeftEncoderPinA, LOW);  // turn on pullup resistors
+  pinMode(c_LeftEncoderPinB, INPUT);      // sets pin B as input
+  digitalWrite(c_LeftEncoderPinB, LOW);  // turn on pullup resistors
+  _LeftEncoderASet = digitalReadFast(c_LeftEncoderPinA);   // read the input pin
+  _LeftEncoderBSet = digitalReadFast(c_LeftEncoderPinB);   // read the input pin
+  attachInterrupt(c_LeftEncoderInterrupt, HandleLeftMotorInterruptA, RISING);
+  
+  // Right encoder
+  pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
+  digitalWrite(c_RightEncoderPinA, LOW);  // turn on pullup resistors
+  pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
+  digitalWrite(26, LOW);  // turn on pullup resistors
+  pinMode(26, INPUT);      // sets pin B as input
+  digitalWrite(c_RightEncoderPinB, LOW);  // turn on pullup resistors
+  _RightEncoderASet = digitalReadFast(c_RightEncoderPinA);   // read the input pin
+  _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin
+  attachInterrupt(c_RightEncoderInterrupt, HandleRightMotorInterruptA, RISING); 
 }
 
 void loop()
 {
   ReadSerial();
-  
-  if (_IsInitialized)
-  {
-    DoWork();
-  }
-  else
-  {
-    RequestInitialization();
-  }
 
-  delay(1000);
+  unsigned long milliSecsSinceLastUpdate = millis() - _TimeInfo.LastUpdateMillisecs;
+  if(milliSecsSinceLastUpdate >= c_UpdateInterval)
+  {
+    //Serial.println(milliSecsSinceLastUpdate);
+    // time for another update
+    _TimeInfo.Update();
+    if (_IsInitialized)
+    {
+      DoWork();
+    }
+    else
+    {
+      RequestInitialization();
+    }
+  }
 }
 
 void DoWork()
 {
-  _TimeInfo.Update();
-  _OdometricLocalizer.Update();
+  _OdometricLocalizer.Update(_LeftEncoderTicks, _RightEncoderTicks);
   _SpeedController.Update();
   IssueCommands();
     
@@ -91,11 +126,15 @@ void DoWork()
   Serial.print("\t");
   Serial.print(_OdometricLocalizer.V, 3);
   Serial.print("\t");
+  Serial.print(_OdometricLocalizer.VLeft, 3);
+  Serial.print("\t");
+  Serial.print(_OdometricLocalizer.VRight, 3);
+  Serial.print("\t");
   Serial.print(_OdometricLocalizer.Omega, 3);
   Serial.print("\t");
-  Serial.print(_LeftEncoder.GetPosition());
+  Serial.print(_LeftEncoderTicks);
   Serial.print("\t");
-  Serial.print(_RightEncoder.GetPosition());
+  Serial.print(_RightEncoderTicks);
   Serial.print("\n");
 }
 
@@ -109,57 +148,64 @@ void IssueCommands()
 {
   float normalizedRightMotorCV, normalizedLeftMotorCV;
   
-  //_Psx.poll(); // poll the Sony Playstation controller
-  //if (_Psx.Controller_mode == 115)
-  //{
-  //  // analog mode; we use the right joystick to determine the desired speed
-
-  //  float mainSpeed = -(_Psx.Right_y - 128.0);
-  //  float rightLeftRatio = -(_Psx.Right_x - 128) / 128.0;
-    
-  //  normalizedRigthSpeed = mainSpeed + rightLeftRatio * 128;
-  //  normalizedLeftSpeed = mainSpeed - rightLeftRatio * 128;
-  //}
-  //else
-  //{
-    normalizedRightMotorCV = _SpeedController.NormalizedLeftCV;
-    normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
-  //}
+  normalizedRightMotorCV = _SpeedController.NormalizedLeftCV;
+  normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
   
-  /*
   Serial.print("Speed: ");
+  Serial.print(_SpeedController.DesiredVelocity);
+  Serial.print("\t");
+  Serial.print(_SpeedController.DesiredAngularVelocity);
+  Serial.print("\t");
+  Serial.print(_SpeedController.LeftError);
+  Serial.print("\t");
+  Serial.print(_SpeedController.RightError);
+  Serial.print("\t");
   Serial.print(normalizedRightMotorCV);
   Serial.print("\t");
   Serial.print(normalizedLeftMotorCV);
   Serial.print("\n");
-  */
   
-  float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxSpeed, 90.0 + c_MaxSpeed);     // scale it to use it with the servo (value between 0 and 180) 
-  float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxSpeed, 90.0 + c_MaxSpeed);     // scale it to use it with the servo (value between 0 and 180) 
+  float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
+  float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
  
-  /* 
+ 
   Serial.print("Servos: ");
   Serial.print(rightServoValue);
   Serial.print("\t");
   Serial.print(leftServoValue);
   Serial.print("\n");
-  */
 
-  //_RightServo.write(rightServoValue);     // sets the servo position according to the scaled value (0 ... 179)
-  //_LeftServo.write(leftServoValue);     // sets the servo position according to the scaled value (0 ... 179)
+  _RightServo.write(rightServoValue);     // sets the servo position according to the scaled value (0 ... 179)
+  _LeftServo.write(leftServoValue);     // sets the servo position according to the scaled value (0 ... 179)
 }
 
 
 // Interrupt service routines for the left motor's quadrature encoder
-void HandleRightMotorInterruptA()
+void HandleLeftMotorInterruptA()
 {
-  _RightEncoder.OnAChanged();
+  // Test transition
+  _LeftEncoderASet = digitalReadFast(c_LeftEncoderPinA);   // read the input pin
+  _LeftEncoderBSet = digitalReadFast(c_LeftEncoderPinB);   // read the input pin
+
+  // and adjust counter + if A leads B
+  if (c_LeftEncoderIsReversed)
+    _LeftEncoderTicks -= (_LeftEncoderASet != _LeftEncoderBSet) ? +1 : -1;
+  else
+    _LeftEncoderTicks += (_LeftEncoderASet != _LeftEncoderBSet) ? +1 : -1;
 }
 
 // Interrupt service routines for the right motor's quadrature encoder
-void HandleLeftMotorInterruptA()
+void HandleRightMotorInterruptA()
 {
-  _LeftEncoder.OnAChanged();
+  // Test transition
+  _RightEncoderASet = digitalReadFast(c_RightEncoderPinA);   // read the input pin
+  _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin
+
+  // and adjust counter + if A leads B
+  if (c_RightEncoderIsReversed)
+    _RightEncoderTicks -= (_RightEncoderASet != _RightEncoderBSet) ? +1 : -1;
+  else
+    _RightEncoderTicks += (_RightEncoderASet != _RightEncoderBSet) ? +1 : -1;
 }
 
 
