@@ -1,0 +1,13 @@
+Pittman GM8224D201-R2
+Mini Gearhead Motor with 500 cnt/rev Encoder
+1 to 24 VDC
+121 RPM at 6V  140 ma
+251 RPM at 12V  175 ma
+382 RPM at 18V  200 ma
+512 RPM at 24V  220 ma
+resistance approx. 4.3 ohms
+gear ratio  19.5/1
+motor body 1.37" dia. x 3.9" L
+3/16" dia. by .7" length shaft
+weight 288 grams
+$27.50  65 available 
