@@ -24,8 +24,7 @@ private:
 
 	float _LastLeftError, _LastRightError;
 
-	float _LeftErrorIntegral;
-	float _RightErrorIntegral;
+	float _LeftErrorIntegral, _RightErrorIntegral;
 	//float _ErrorIntegralAcrossWheels;
 
 	float ClipIntegralContribution(float integralContribution)
@@ -71,8 +70,25 @@ public:
 		DesiredAngularVelocity = 0.0;
 	}
 	
-	void Update()
+	void Update(bool batteryVoltageIsTooLow)
 	{
+		if (batteryVoltageIsTooLow)
+		{
+			// we need to stop the motors and stop accumulating errors
+			_LastLeftError = 0.0;
+			_LastRightError = 0.0;
+			_LeftErrorIntegral = 0.0;
+			_RightErrorIntegral = 0.0;
+			LeftError = 0.0;
+			RightError = 0.0;	
+			NormalizedLeftCV = 0.0;
+			NormalizedLeftCV = 0.0;
+
+			DesiredVelocity = 0.0;
+			DesiredAngularVelocity = 0.0;
+			return;
+		}
+
 		float angularVelocityOffset = 0.5 * DesiredAngularVelocity * _pRobotParams->TrackWidth;
 		
 		float expectedLeftSpeed = DesiredVelocity - angularVelocityOffset;

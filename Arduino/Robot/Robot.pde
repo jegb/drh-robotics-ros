@@ -3,6 +3,7 @@
 #include <TimeInfo.h>
 #include <OdometricLocalizer.h>
 #include <SpeedController.h>
+#include <BatteryMonitor.h>
 #include <Servo.h> 
 #include <Messenger.h>
 #include <digitalWriteFast.h>  // library for high performance reads and writes by jrraines
@@ -41,7 +42,13 @@ volatile bool _RightEncoderBSet;
 volatile long _RightEncoderTicks = 0;
 
 OdometricLocalizer _OdometricLocalizer(&_RobotParams, &_TimeInfo);
+
 SpeedController _SpeedController(&_OdometricLocalizer, &_RobotParams, &_TimeInfo);
+bool _SpeedControllerIsInitialized = false;
+
+#define c_ScaledBatteryVInPin 8 // analog input pin for the battery voltage divider
+#define c_VInToVBatteryRatio 2.921
+BatteryMonitor _BatteryMonitor(c_ScaledBatteryVInPin, c_VInToVBatteryRatio);
 
 // Instantiate Messenger object with the message function and the default separator (the space character)
 Messenger _Messenger = Messenger();
@@ -113,7 +120,8 @@ void loop()
 void DoWork()
 {
   _OdometricLocalizer.Update(_LeftEncoderTicks, _RightEncoderTicks);
-  _SpeedController.Update();
+  _BatteryMonitor.Update();
+  _SpeedController.Update(_BatteryMonitor.VoltageIsTooLow);
   IssueCommands();
     
   Serial.print("o\t"); // o indicates odometry message
@@ -135,12 +143,33 @@ void DoWork()
   Serial.print("\t");
   Serial.print(_RightEncoderTicks);
   Serial.print("\n");
+
+  Serial.print("b\t"); // o indicates battery info message
+  Serial.print(_BatteryMonitor.BatteryVoltage, 3);
+  Serial.print("\t");
+  Serial.print(_BatteryMonitor.VoltageIsTooLow);
+  Serial.print("\n");
 }
 
 void RequestInitialization()
 {
-    Serial.print("ni"); // sending 'n'ot 'i'nialized indicator
-    Serial.print("\n");
+    _IsInitialized = true;
+    
+    if (!_SpeedControllerIsInitialized)
+    {
+      _IsInitialized = false;
+
+      Serial.print("InitializeSpeedController"); // requesting initialization of the speed controller
+      Serial.print("\n");
+    }
+    
+    if (!_BatteryMonitor.IsInitialized)
+    {
+      _IsInitialized = false;
+
+      Serial.print("InitializeBatteryMonitor"); // requesting initialization of the battery monitor
+      Serial.print("\n");
+    }
 }
 
 void IssueCommands()
@@ -150,6 +179,7 @@ void IssueCommands()
   normalizedRightMotorCV = _SpeedController.NormalizedLeftCV;
   normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
   
+  /*
   Serial.print("Speed: ");
   Serial.print(_SpeedController.DesiredVelocity);
   Serial.print("\t");
@@ -163,16 +193,19 @@ void IssueCommands()
   Serial.print("\t");
   Serial.print(normalizedLeftMotorCV);
   Serial.print("\n");
+  */
   
   float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
   float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
  
  
+  /*
   Serial.print("Servos: ");
   Serial.print(rightServoValue);
   Serial.print("\t");
   Serial.print(leftServoValue);
   Serial.print("\n");
+  */
 
   _RightServo.write(rightServoValue);     // sets the servo position according to the scaled value (0 ... 179)
   _LeftServo.write(leftServoValue);     // sets the servo position according to the scaled value (0 ... 179)
@@ -225,10 +258,15 @@ void OnMssageCompleted()
     return;
   }
 
-  if (_Messenger.checkString("g"))
+  if (_Messenger.checkString("SpeedControllerGains"))
   {
     SetSpeedControllerGains();
     return;
+  }
+  
+  if (_Messenger.checkString("BatteryMonitorParams"))
+  {
+    InitializeBatteryMonitor();
   }
 
   // clear out unrecognized content
@@ -250,7 +288,7 @@ void SetSpeedControllerGains()
   _SpeedController.IParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _SpeedController.DParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   
-  _IsInitialized = true;
+  _SpeedControllerIsInitialized = true;
 
   Serial.print("PID Params: ");
   Serial.print(_SpeedController.PParam);
@@ -258,6 +296,16 @@ void SetSpeedControllerGains()
   Serial.print(_SpeedController.IParam);
   Serial.print("\t");
   Serial.print(_SpeedController.DParam);
+  Serial.print("\n");
+}
+
+void InitializeBatteryMonitor()
+{
+  float voltageTooLowlimit = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  _BatteryMonitor.InitializeLowVoltageLimit(voltageTooLowlimit);
+
+  Serial.print("battery monitor Params: ");
+  Serial.print(voltageTooLowlimit);
   Serial.print("\n");
 }
 
