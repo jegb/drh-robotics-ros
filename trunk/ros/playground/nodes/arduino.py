@@ -54,17 +54,22 @@ class Arduino(object):
 	def _HandleReceivedLine(self,  line):
 		self._Counter = self._Counter + 1
 		#rospy.logdebug(str(self._Counter) + " " + line)
-		if (self._Counter % 50 == 0):
-			self._Publisher.publish(String(str(self._Counter) + " " + line))
+		#if (self._Counter % 50 == 0):
+		self._Publisher.publish(String(str(self._Counter) + " " + line))
 		
 		if (len(line) > 0):
 			lineParts = line.split('\t')
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
 				return
-			if (lineParts[0] == "ni"):
+			if (lineParts[0] == "InitializeSpeedController"):
 				# controller requesting initialization
 				self._InitializeDriveMotorGains()
+				return
+			if (lineParts[0] == "InitializeBatteryMonitor"):
+				# controller requesting initialization
+				self._InitializeBatteryMonitor()
+				return
 
 	def _BroadcastOdometryInfo(self, lineParts):
 		partsCount = len(lineParts)
@@ -188,8 +193,16 @@ class Arduino(object):
 		""" Writes the drive gains (PID) to the Arduino controller. """
 		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
 		
-		message = 'g %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
-		rospy.loginfo("Sending set drive gains command message: " + message)
+		message = 'SpeedControllerGains %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
+		rospy.logdebug("Sending speed controller gains message: " + message)
+		self._SerialDataGateway.Write(message)
+
+	def _InitializeBatteryMonitor(self):
+		voltageTooLowlimit = rospy.get_param("~batteryMonitorParams/voltageTooLowlimit", "12.0")
+		rospy.logdebug("Initializing battery monitor. voltageTooLowLimit = " + str(voltageTooLowlimit))
+
+		message = 'BatteryMonitorParams %d %d\r' % self._GetBaseAndExponent(voltageTooLowlimit)
+		rospy.logdebug("Sending battery monitor params message: " + message)
 		self._SerialDataGateway.Write(message)
 
 	def _GetBaseAndExponent(self, floatValue, resolution=4):
