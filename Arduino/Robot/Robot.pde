@@ -27,7 +27,7 @@ Servo _LeftServo;  // create servo object to control left motor
 #define c_LeftEncoderInterrupt 4
 #define c_LeftEncoderPinA 19
 #define c_LeftEncoderPinB 25
-#define c_LeftEncoderIsReversed true
+#define LeftEncoderIsReversed
 volatile bool _LeftEncoderASet;
 volatile bool _LeftEncoderBSet;
 volatile long _LeftEncoderTicks = 0;
@@ -36,7 +36,6 @@ volatile long _LeftEncoderTicks = 0;
 #define c_RightEncoderInterrupt 5
 #define c_RightEncoderPinA 18
 #define c_RightEncoderPinB 24
-#define c_RightEncoderIsReversed false
 volatile bool _RightEncoderASet;
 volatile bool _RightEncoderBSet;
 volatile long _RightEncoderTicks = 0;
@@ -183,29 +182,29 @@ void IssueCommands()
 // Interrupt service routines for the left motor's quadrature encoder
 void HandleLeftMotorInterruptA()
 {
-  // Test transition
-  _LeftEncoderASet = digitalReadFast(c_LeftEncoderPinA);   // read the input pin
+  // Test transition; since the interrupt will only fire on 'rising' we don't need to read pin A
   _LeftEncoderBSet = digitalReadFast(c_LeftEncoderPinB);   // read the input pin
 
   // and adjust counter + if A leads B
-  if (c_LeftEncoderIsReversed)
-    _LeftEncoderTicks -= (_LeftEncoderASet != _LeftEncoderBSet) ? +1 : -1;
-  else
-    _LeftEncoderTicks += (_LeftEncoderASet != _LeftEncoderBSet) ? +1 : -1;
+  #ifdef LeftEncoderIsReversed
+    _LeftEncoderTicks -= _LeftEncoderBSet ? -1 : +1;
+  #else
+    _LeftEncoderTicks += _LeftEncoderBSet ? -1 : +1;
+  #endif
 }
 
 // Interrupt service routines for the right motor's quadrature encoder
 void HandleRightMotorInterruptA()
 {
-  // Test transition
-  _RightEncoderASet = digitalReadFast(c_RightEncoderPinA);   // read the input pin
+  // Test transition; since the interrupt will only fire on 'rising' we don't need to read pin A
   _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin
 
   // and adjust counter + if A leads B
-  if (c_RightEncoderIsReversed)
-    _RightEncoderTicks -= (_RightEncoderASet != _RightEncoderBSet) ? +1 : -1;
-  else
-    _RightEncoderTicks += (_RightEncoderASet != _RightEncoderBSet) ? +1 : -1;
+  #ifdef RightEncoderIsReversed
+    _RightEncoderTicks -= _RightEncoderBSet ? -1 : +1;
+  #else
+    _RightEncoderTicks += _RightEncoderBSet ? -1 : +1;
+  #endif
 }
 
 
