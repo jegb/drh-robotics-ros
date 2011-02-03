@@ -1,0 +1,15 @@
+<launch>
+  <node name="arduino" pkg="ardros" type="arduino.py">
+    <rosparam file="$(find ardros)/default.yaml" command="load" />
+  </node>
+  
+  <!-- joystick node -->
+  <node respawn="true" name="PS3Joystick" pkg="joy" type="joy_node" >
+    <rosparam file="$(find ardros)/joystick.yaml" command="load" />
+  </node>
+
+  <!-- the teleop node connects the joystick with the ardros robot -->
+  <node name="teleop" pkg="ardros" type="teleop.py">
+    <rosparam file="$(find ardros)/teleop.yaml" command="load" />
+  </node>
+</launch>

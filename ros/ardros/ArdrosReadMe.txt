@@ -9,6 +9,7 @@ Note: Without using a launch file it could be started this way:
 rosrun ardros arduino.py
 
 roslaunch ardros teleop.launch
+roslaunch ardros teleopRobot.launch
 
 
 In Terminal 3:
