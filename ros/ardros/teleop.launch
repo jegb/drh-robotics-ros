@@ -1,0 +1,5 @@
+<launch>
+  <node name="teleop" pkg="ardros" type="teleop.py">
+    <rosparam file="$(find ardros)/teleop.yaml" command="load" />
+  </node>
+</launch>
