@@ -1,0 +1,5 @@
+port: /dev/ttyUSB0
+baudRate: 115200
+batteryMonitorParams: {voltageTooLowlimit: 11.7}
+driveMotorGains: {kp: 0.1, ki: 0.1, kd: 0.0} 
+
