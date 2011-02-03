@@ -1,19 +1,20 @@
 <package>
   <description brief="ardros">
 
-     playground
+     Arduino based robot controlled via ROS: Ard(uino)Ros
 
   </description>
   <author>Dr. Rainer Hessmer</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/playground</url>
+  <url>http://ros.org/wiki/ardros</url>
   <depend package="std_msgs"/>
   <depend package="rospy"/>
   <depend package="roscpp"/>
   <depend package="geometry_msgs"/>
   <depend package="nav_msgs"/>
   <depend package="tf"/>
+  <depend package="joy"/>
 
 </package>
 

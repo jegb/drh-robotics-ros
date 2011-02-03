@@ -8,6 +8,9 @@ roslaunch ardros default.launch
 Note: Without using a launch file it could be started this way:
 rosrun ardros arduino.py
 
+roslaunch ardros teleop.launch
+
+
 In Terminal 3:
 rosrun rviz rviz
 
@@ -45,4 +48,10 @@ rosservice call /setDriveControlGains 1 0 0
 
 
 rosparam list
+
+Setup joystick
+
+sudo bash
+rosrun ps3joy ps3joy.py
+rosrun joy joy_node
 
