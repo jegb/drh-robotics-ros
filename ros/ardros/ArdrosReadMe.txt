@@ -2,11 +2,11 @@ In Terminal 1
 roscore
 
 In Terminal 2
-roscd playground
-roslaunch playground default.launch
+roscd ardros
+roslaunch ardros default.launch
 
 Note: Without using a launch file it could be started this way:
-rosrun playground arduino.py
+rosrun ardros arduino.py
 
 In Terminal 3:
 rosrun rviz rviz
