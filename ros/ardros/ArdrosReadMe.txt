@@ -44,7 +44,7 @@ rxplot /odom/pose/pose/position/x  /odom/pose/pose/position/y
 
 Showing an invoking service
 rosservice list
-rosservice call /setDriveControlGains 1 0 0
+rosservice call /setDriveControlGains 0.1 0.1 0.1 0.1
 
 
 
