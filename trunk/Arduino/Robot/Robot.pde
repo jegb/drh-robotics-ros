@@ -42,9 +42,7 @@ volatile bool _RightEncoderBSet;
 volatile long _RightEncoderTicks = 0;
 
 OdometricLocalizer _OdometricLocalizer(&_RobotParams, &_TimeInfo);
-
 SpeedController _SpeedController(&_OdometricLocalizer, &_RobotParams, &_TimeInfo);
-bool _SpeedControllerIsInitialized = false;
 
 #define c_ScaledBatteryVInPin 8 // analog input pin for the battery voltage divider
 #define c_VInToVBatteryRatio 2.921
@@ -155,11 +153,11 @@ void RequestInitialization()
 {
     _IsInitialized = true;
     
-    if (!_SpeedControllerIsInitialized)
+    if (!_SpeedController.IsInitialized)
     {
       _IsInitialized = false;
 
-      Serial.print("InitializeSpeedController"); // requesting initialization of the speed controller
+      Serial.print("InitializeDifferentialDriveGains"); // requesting initialization of the speed controller
       Serial.print("\n");
     }
     
@@ -180,6 +178,7 @@ void IssueCommands()
   normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
   
   /*
+  */
   Serial.print("Speed: ");
   Serial.print(_SpeedController.DesiredVelocity);
   Serial.print("\t");
@@ -189,11 +188,12 @@ void IssueCommands()
   Serial.print("\t");
   Serial.print(_SpeedController.RightError);
   Serial.print("\t");
+  Serial.print(_SpeedController.TurnError);
+  Serial.print("\t");
   Serial.print(normalizedRightMotorCV);
   Serial.print("\t");
   Serial.print(normalizedLeftMotorCV);
   Serial.print("\n");
-  */
   
   float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
   float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
@@ -258,9 +258,9 @@ void OnMssageCompleted()
     return;
   }
 
-  if (_Messenger.checkString("SpeedControllerGains"))
+  if (_Messenger.checkString("DifferentialDriveGains"))
   {
-    SetSpeedControllerGains();
+    SetDifferentialDriveGains();
     return;
   }
   
@@ -282,20 +282,23 @@ void SetSpeed()
   _SpeedController.DesiredAngularVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
 }
 
-void SetSpeedControllerGains()
+void SetDifferentialDriveGains()
 {
-  _SpeedController.PParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
-  _SpeedController.IParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
-  _SpeedController.DParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float velocityPParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float velocityIParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float turnPParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float turnIParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   
-  _SpeedControllerIsInitialized = true;
+  _SpeedController.Initialize(velocityPParam, velocityIParam, turnPParam, turnIParam);
 
   Serial.print("PID Params: ");
-  Serial.print(_SpeedController.PParam);
+  Serial.print(velocityPParam);
   Serial.print("\t");
-  Serial.print(_SpeedController.IParam);
+  Serial.print(velocityIParam);
   Serial.print("\t");
-  Serial.print(_SpeedController.DParam);
+  Serial.print(turnPParam);
+  Serial.print("\t");
+  Serial.print(turnIParam);
   Serial.print("\n");
 }
 

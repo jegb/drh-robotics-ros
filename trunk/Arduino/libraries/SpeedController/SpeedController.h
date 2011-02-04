@@ -22,10 +22,11 @@ private:
 	RobotParams* _pRobotParams;
 	TimeInfo* _pTimeInfo;
 
-	float _LastLeftError, _LastRightError;
-
-	float _LeftErrorIntegral, _RightErrorIntegral;
-	//float _ErrorIntegralAcrossWheels;
+	//float _LastLeftError, _LastRightError, _LastTurnError;
+	float _LeftErrorIntegral, _RightErrorIntegral, _TurnErrorIntegral;
+	
+	float _MaxVelocityErrorIntegral;
+	float _MaxTurnErrorIntegral;
 
 	float ClipIntegralContribution(float integralContribution)
 	{
@@ -37,19 +38,41 @@ private:
 		{
 			return -1.0;
 		}
-	} 
+	}
+	
+	void Reset()
+	{
+		//_LastLeftError = 0.0;
+		//_LastRightError = 0.0;
+		_LeftErrorIntegral = 0.0;
+		_RightErrorIntegral = 0.0;
+		_TurnErrorIntegral = 0.0;
+		LeftError = 0.0;
+		RightError = 0.0;	
+		TurnError = 0.0;	
+		NormalizedLeftCV = 0.0;
+		NormalizedLeftCV = 0.0;
+
+		DesiredVelocity = 0.0;
+		DesiredAngularVelocity = 0.0;
+	}
 	
 public:
-	
-	float PParam;
-	float IParam;
-	float DParam;
+	bool IsInitialized;
+
+	float VelocityPParam;
+	float VelocityIParam;
+	//float VelocityDParam;
+
+	float TurnPParam;
+	float TurnIParam;
 
 	float DesiredVelocity;
 	float DesiredAngularVelocity;
 
 	float LeftError;
 	float RightError;
+	float TurnError;
 
 	// normalized control values for the left and right motor
 	float NormalizedLeftCV;
@@ -61,13 +84,32 @@ public:
 
 		_pRobotParams = pRobotParams;
 		_pTimeInfo = pTimeInfo;
+		
+		IsInitialized = false;
 
-		PParam = 0.0;
-		IParam = 0.0;
-		DParam = 0.0;
+		VelocityPParam = 0.0;
+		VelocityIParam = 0.0;
+		
+		TurnPParam = 0.0;
+		TurnIParam = 0.0;
 
 		DesiredVelocity = 0.0;
 		DesiredAngularVelocity = 0.0;
+	}
+	
+	void Initialize(float velocityPParam, float velocityIParam, float turnPParam, float turnIParam)
+	{
+		VelocityPParam = velocityPParam;
+		VelocityIParam = velocityIParam;
+
+		TurnPParam = turnPParam;
+		TurnIParam = turnIParam;
+		
+		// Avoiding runaway integral error contributions
+		_MaxVelocityErrorIntegral = 1 / VelocityIParam;
+		_MaxTurnErrorIntegral = 1 / TurnIParam;
+
+		IsInitialized = true;
 	}
 	
 	void Update(bool batteryVoltageIsTooLow)
@@ -75,17 +117,7 @@ public:
 		if (batteryVoltageIsTooLow)
 		{
 			// we need to stop the motors and stop accumulating errors
-			_LastLeftError = 0.0;
-			_LastRightError = 0.0;
-			_LeftErrorIntegral = 0.0;
-			_RightErrorIntegral = 0.0;
-			LeftError = 0.0;
-			RightError = 0.0;	
-			NormalizedLeftCV = 0.0;
-			NormalizedLeftCV = 0.0;
-
-			DesiredVelocity = 0.0;
-			DesiredAngularVelocity = 0.0;
+			Reset();
 			return;
 		}
 
@@ -96,29 +128,30 @@ public:
 
 		LeftError = expectedLeftSpeed - _pOdometricLocalizer->VLeft;
 		RightError = expectedRightSpeed - _pOdometricLocalizer->VRight;
+		TurnError = LeftError - RightError; // if > 0 then we need to steer more to the left (and vice versa)
 
 		_LeftErrorIntegral += LeftError;
 		_RightErrorIntegral += RightError;
+		_TurnErrorIntegral += TurnError;
 
 		// Avoiding runaway integral error contributions
-		float maxIntegralValue = 1.0 / IParam;
-		_LeftErrorIntegral = constrain(_LeftErrorIntegral, -maxIntegralValue, +maxIntegralValue);
-		_RightErrorIntegral = constrain(_RightErrorIntegral, -maxIntegralValue, +maxIntegralValue);
+		_LeftErrorIntegral = constrain(_LeftErrorIntegral, -_MaxVelocityErrorIntegral, +_MaxVelocityErrorIntegral);
+		_RightErrorIntegral = constrain(_RightErrorIntegral, -_MaxVelocityErrorIntegral, +_MaxVelocityErrorIntegral);
+		_TurnErrorIntegral = constrain(_TurnErrorIntegral, -_MaxTurnErrorIntegral, +_MaxTurnErrorIntegral);
 
-		float leftErrorDifferential = (LeftError - _LastLeftError);
-		float rightErrorDifferential = (RightError - _LastRightError);
+		//float leftErrorDifferential = (LeftError - _LastLeftError);
+		//float rightErrorDifferential = (RightError - _LastRightError);
 		
-		//float errorAcrossWheels = _pOdometricLocalizer->VLeft - _pOdometricLocalizer->VRight + 2 * angularVelocityOffset;
-		//_ErrorIntegralAcrossWheels += errorAcrossWheels * _pTimeInfo->SecondsSinceLastUpdate;
-		
-		NormalizedLeftCV = PParam * LeftError + DParam * leftErrorDifferential + IParam * _LeftErrorIntegral;
+		NormalizedLeftCV = VelocityPParam * LeftError + VelocityIParam * _LeftErrorIntegral
+		                   + (TurnPParam * TurnError + TurnIParam * _TurnErrorIntegral);
 		NormalizedLeftCV = constrain(NormalizedLeftCV, -1, +1);
 
-		NormalizedRightCV = PParam * RightError + DParam * rightErrorDifferential + IParam * _RightErrorIntegral;
+		NormalizedRightCV = VelocityPParam * RightError + VelocityIParam * _RightErrorIntegral;
+		                    - (TurnPParam * TurnError + TurnIParam * _TurnErrorIntegral);
 		NormalizedRightCV = constrain(NormalizedRightCV, -1, +1);
 		
-		_LastLeftError = LeftError;
-		_LastRightError = RightError;
+		//_LastLeftError = LeftError;
+		//_LastRightError = RightError;
 	}
 };
 

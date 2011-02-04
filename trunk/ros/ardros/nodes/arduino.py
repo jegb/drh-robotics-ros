@@ -31,7 +31,7 @@ Created January, 2011
   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '''
 
-import roslib; roslib.load_manifest('playground')
+import roslib; roslib.load_manifest('ardros')
 import rospy
 import tf
 import math
@@ -42,7 +42,7 @@ from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from std_msgs.msg import String
-from playground.srv import *
+from ardros.srv import *
 
 from SerialDataGateway import SerialDataGateway
 
@@ -55,16 +55,15 @@ class Arduino(object):
 		self._Counter = self._Counter + 1
 		#rospy.logdebug(str(self._Counter) + " " + line)
 		#if (self._Counter % 50 == 0):
-		self._Publisher.publish(String(str(self._Counter) + " " + line))
-		
+		self._SerialPublisher.publish(String(str(self._Counter) + " " + line))
 		if (len(line) > 0):
 			lineParts = line.split('\t')
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
 				return
-			if (lineParts[0] == "InitializeSpeedController"):
+			if (lineParts[0] == "InitializeDifferentialDriveGains"):
 				# controller requesting initialization
-				self._InitializeDriveMotorGains()
+				self._InitializeDifferentialDriveGains()
 				return
 			if (lineParts[0] == "InitializeBatteryMonitor"):
 				# controller requesting initialization
@@ -144,7 +143,7 @@ class Arduino(object):
 
 		# subscriptions
 		rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand)
-		self._Publisher = rospy.Publisher('serial', String)
+		self._SerialPublisher = rospy.Publisher('serial', String)
 
 		self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
 		self._OdometryPublisher = rospy.Publisher("odom", Odometry)
@@ -171,21 +170,23 @@ class Arduino(object):
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
 
-	def _InitializeDriveMotorGains(self):
-		kp = rospy.get_param("~driveMotorGains/kp", "0")
-		ki = rospy.get_param("~driveMotorGains/ki", "0")
-		kd = rospy.get_param("~driveMotorGains/kd", "0")
+	def _InitializeDifferentialDriveGains(self):
+		velocityPParam = rospy.get_param("~differentialDriveGains/velocityPParam", "0")
+		velocityIParam = rospy.get_param("~differentialDriveGains/velocityIParam", "0")
+		turnPParam = rospy.get_param("~differentialDriveGains/turnPParam", "0")
+		turnIParam = rospy.get_param("~differentialDriveGains/turnIParam", "0")
 
-		driveGains = (kp, ki, kd)
+		driveGains = (velocityPParam, velocityIParam, turnPParam, turnIParam)
+		rospy.loginfo(str(driveGains))
 		self._WriteDriveGains(driveGains)
 
 	def _HandleSetDriveGains(self, request):
 		""" Handle the setting of the drive gains (PID). """
 		
 		# We persist the new values in the parameter server
-		rospy.set_param("~driveMotorGains", {'kp': request.kp, 'ki': request.ki, 'kd': request.kd})
+		rospy.set_param("~differentialDriveGains", {'velocityPParam': request.velocityPParam, 'velocityPParam': request.velocityIParam, 'turnPParam': request.turnPParam, 'turnIParam': request.turnIParam})
 		
-		driveGains = (request.kp, request.ki, request.kd)
+		driveGains = (request.velocityPParam, request.velocityIParam, request.turnPParam, request.turnIParam)
 		self._WriteDriveGains(driveGains)
 		return SetDriveControlGainsResponse()
 
@@ -193,8 +194,8 @@ class Arduino(object):
 		""" Writes the drive gains (PID) to the Arduino controller. """
 		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
 		
-		message = 'SpeedControllerGains %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
-		rospy.logdebug("Sending speed controller gains message: " + message)
+		message = 'DifferentialDriveGains %d %d %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
+		rospy.logdebug("Sending differential drive gains message: " + message)
 		self._SerialDataGateway.Write(message)
 
 	def _InitializeBatteryMonitor(self):
@@ -247,4 +248,5 @@ if __name__ == '__main__':
 
 	except rospy.ROSInterruptException:
 		arduino.Stop()
+
 
