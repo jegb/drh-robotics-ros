@@ -1,4 +1,8 @@
 <launch>
+  <!-- joystick node -->
+  <node respawn="true" name="PS3Joystick" pkg="joy" type="joy_node" >
+    <rosparam file="$(find ardros)/joystick.yaml" command="load" />
+  </node>
   <node name="teleop" pkg="ardros" type="teleop.py">
     <rosparam file="$(find ardros)/teleop.yaml" command="load" />
   </node>

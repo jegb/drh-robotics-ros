@@ -50,9 +50,21 @@ rosservice call /setDriveControlGains 0.1 0.1 0.1 0.1
 
 rosparam list
 
-Setup joystick
 
-sudo bash
-rosrun ps3joy ps3joy.py
+ls /dev/input/
+sudo jstest /dev/input/jsX
+
+Axes:  0:     0  1:     0  2:     0  3:     0  4:  8340  5: -1192  6:-32767  7:     0  8:     0  9:     0 10:     0 11:     0 12:     0 13:     0 14:     0 15:     0 16:     0 17:     0 18:     0 19:     0 20:     0 21:     0 22:     0 23:     0 24:     0 25:     0 26:     0 27:     0 28:     0 Buttons:  0:off  1:off  2:off  3:off  4:off  5:off  6:off  7:off  8:off  9:off 10:off 11:off 12:off 13:off 14:off 15:off 16:off 
+
+rosparam set joy_node/dev "/dev/input/js1"
 rosrun joy joy_node
+
+New terminal:
+rostopic echo joy
+
+
+Logging:
+rxloggerlevel &
+rxconsole &
+
 
