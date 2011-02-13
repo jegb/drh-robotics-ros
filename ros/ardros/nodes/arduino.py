@@ -61,6 +61,10 @@ class Arduino(object):
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
 				return
+			if (lineParts[0] == "InitializeDifferentialDriveOdomParams"):
+				# controller requesting initialization
+				self._InitializeDifferentialDriveOdomParams()
+				return
 			if (lineParts[0] == "InitializeDifferentialDriveGains"):
 				# controller requesting initialization
 				self._InitializeDifferentialDriveGains()
@@ -170,6 +174,18 @@ class Arduino(object):
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
 
+	def _InitializeDifferentialDriveOdomParams(self):
+		wheelDiameter = rospy.get_param("~differentialDriveOdomParams/wheelDiameter", "0")
+		trackWidth = rospy.get_param("~differentialDriveOdomParams/trackWidth", "0")
+		countsPerRevolution = rospy.get_param("~differentialDriveOdomParams/countsPerRevolution", "0")
+
+		wheelDiameterParts = self._GetBaseAndExponent(wheelDiameter)
+		trackWidthParts = self._GetBaseAndExponent(trackWidth)
+
+		message = 'DifferentialDriveOdomParams %d %d %d %d %d\r' % (wheelDiameterParts[0], wheelDiameterParts[1], trackWidthParts[0], trackWidthParts[1], countsPerRevolution)
+		rospy.logdebug("Sending differential drive odom params message: " + message)
+		self._SerialDataGateway.Write(message)
+
 	def _InitializeDifferentialDriveGains(self):
 		velocityPParam = rospy.get_param("~differentialDriveGains/velocityPParam", "0")
 		velocityIParam = rospy.get_param("~differentialDriveGains/velocityIParam", "0")
@@ -177,7 +193,7 @@ class Arduino(object):
 		turnIParam = rospy.get_param("~differentialDriveGains/turnIParam", "0")
 
 		driveGains = (velocityPParam, velocityIParam, turnPParam, turnIParam)
-		rospy.loginfo(str(driveGains))
+		#rospy.loginfo(str(driveGains))
 		self._WriteDriveGains(driveGains)
 
 	def _HandleSetDriveGains(self, request):

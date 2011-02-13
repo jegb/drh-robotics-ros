@@ -17,8 +17,8 @@
 #define c_UpdateInterval 20 // update interval in milli seconds
 #define c_MaxMotorCV 30   // range is 0 ... 89 (half servo range)
 
-// set robot params wheel diameter [m], trackwidth [m], ticks per revolution
-RobotParams _RobotParams = RobotParams(0.0762, 0.37, 9750);
+// container for robot params wheel diameter [m], trackwidth [m], ticks per revolution
+RobotParams _RobotParams = RobotParams();
 TimeInfo _TimeInfo = TimeInfo();
 Servo _RightServo;  // create servo object to control right motor
 Servo _LeftServo;  // create servo object to control left motor
@@ -152,7 +152,15 @@ void DoWork()
 void RequestInitialization()
 {
     _IsInitialized = true;
-    
+
+    if (!_RobotParams.IsInitialized)
+    {
+      _IsInitialized = false;
+
+      Serial.print("InitializeDifferentialDriveOdomParams"); // requesting initialization of the parameters of the differential drive needed for odometry calculations
+      Serial.print("\n");
+    }
+
     if (!_SpeedController.IsInitialized)
     {
       _IsInitialized = false;
@@ -258,6 +266,12 @@ void OnMssageCompleted()
     return;
   }
 
+  if (_Messenger.checkString("DifferentialDriveOdomParams"))
+  {
+    SetDifferentialDriveOdomParams();
+    return;
+  }
+
   if (_Messenger.checkString("DifferentialDriveGains"))
   {
     SetDifferentialDriveGains();
@@ -280,6 +294,16 @@ void SetSpeed()
 {
   _SpeedController.DesiredVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _SpeedController.DesiredAngularVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+}
+
+// set robot params wheel diameter [m], trackwidth [m], ticks per revolution
+void SetDifferentialDriveOdomParams()
+{
+  float wheelDiameter = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float trackWidth = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  int countsPerRevolution = _Messenger.readInt();
+  
+  _RobotParams.Initialize(wheelDiameter, trackWidth, countsPerRevolution);
 }
 
 void SetDifferentialDriveGains()

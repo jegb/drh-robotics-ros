@@ -1,5 +1,6 @@
 port: /dev/ttyUSB0
 baudRate: 115200
 batteryMonitorParams: {voltageTooLowlimit: 11.7}
+differentialDriveOdomParams: {wheelDiameter: 0.0763, trackWidth: 0.37, countsPerRevolution: 9750}
 differentialDriveGains: {velocityPParam: 0.1, velocityIParam: 0.1, turnPParam: 0.4, turnIParam: 0.5} 
 

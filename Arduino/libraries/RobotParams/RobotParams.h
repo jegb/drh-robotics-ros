@@ -15,6 +15,7 @@
 class RobotParams
 {
 	public:
+		bool IsInitialized;
 		double WheelDiameter;
 		double TrackWidth;
 		double CountsPerRevolution;
@@ -22,7 +23,13 @@ class RobotParams
 		double RadiansPerCount;
 
 
-		RobotParams(double wheelDiameter, double trackWidth, int countsPerRevolution)
+		RobotParams()
+		{
+			IsInitialized = false;
+		}
+
+		// initializes robot params wheel diameter [m], trackwidth [m], ticks per revolution
+		void Initialize(double wheelDiameter, double trackWidth, int countsPerRevolution)
 		{
 			WheelDiameter = wheelDiameter;
 			TrackWidth = trackWidth;
@@ -30,6 +37,8 @@ class RobotParams
 
 			DistancePerCount = (PI * wheelDiameter) / (double)countsPerRevolution;
 			RadiansPerCount = DistancePerCount / trackWidth;
+
+			IsInitialized = true;
 		}
 };
 
