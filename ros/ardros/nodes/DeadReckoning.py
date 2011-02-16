@@ -59,9 +59,9 @@ class Driver(object):
 		
 		self._VelocityCommandPublisher = rospy.Publisher("cmd_vel", Twist)
 
-	def DriveForward(self, distance, speed):
+	def DriveX(self, distance, speed):
 		'''
-		Drive forward a specified distance based on odometry information
+		Drive in x direction a specified distance based on odometry information
 		distance [m]: the distance to travel in the x direction (>0: forward, <0: backwards)
 		speed [m/s]: the speed with which to travel; must be positive
 		'''
@@ -115,7 +115,87 @@ class Driver(object):
 					break
 				else:
 					# send the drive command
-					#print("sending vel command" + str(velocityCommand))
+					print("sending vel command" + str(velocityCommand))
+					self._VelocityCommandPublisher.publish(velocityCommand)
+				
+			except (tf.LookupException, tf.ConnectivityException):
+				continue
+
+			time.sleep(0.1)
+
+		#stop
+		velocityCommand.linear.x = 0.0
+		velocityCommand.angular.z = 0.0
+		self._VelocityCommandPublisher.publish(velocityCommand)
+		
+		return done
+
+
+	def Turn(self, angle, angularSpeed):
+		'''
+		Turn the robot based on odometry information
+		angle [rad]: the angle to turn (positive angles mean clockwise rotation)
+		angularSpeed [rad/s]: the speed with which to turn; must be positive
+		'''
+
+		ccw = (angle >= 0) # counter clockwise rotation
+		print ccw
+		listener = tf.TransformListener()
+		# Wait for the listener to get the first tranform from the odom frame to the base_link frame.
+		# Note that here the 'from' frame precedes 'to' frame which is opposite to how they are
+		# ordered in tf.TransformBroadcaster's sendTransform function.
+		listener.waitForTransform("/odom", "/base_link", rospy.Time(), rospy.Duration(4.0))
+		
+		# record the starting transform from the odom to the base frame
+		# Note that here the 'from' frame precedes 'to' frame which is opposite to how they are
+		# ordered in tf.TransformBroadcaster's sendTransform function.
+		(startTranslation, startRotation) = listener.lookupTransform("/odom", "/base_link", rospy.Time(0))
+		startAngle = 2 * math.atan2(startRotation[2], startRotation[3])
+
+		print "start angle: " + str(startAngle)
+		previousAngle = startAngle
+		angleOffset = 0.0
+		
+		done = False
+
+		velocityCommand = Twist()
+		velocityCommand.linear.x = 0.0 # going forward m/s
+		if ccw:
+			velocityCommand.angular.z = angularSpeed
+		else:
+			velocityCommand.angular.z = -angularSpeed
+
+		while not rospy.is_shutdown():
+			try:
+				(currentTranslation, currentRotation) = listener.lookupTransform("/odom", "/base_link", rospy.Time(0))
+				currentAngle = 2 * math.atan2(currentRotation[2], currentRotation[3])
+				print "currentAngle: " + str(currentAngle)
+				
+				# we need to handle roll over of the angle
+				if (currentAngle * previousAngle < 0 and math.fabs(currentAngle - previousAngle) > math.pi / 2):
+					if (currentAngle > previousAngle):
+						print "subtracting"
+						angleOffset = angleOffset - 2 * math.pi
+					else:
+						print "adding"
+						angleOffset = angleOffset + 2 * math.pi
+				
+				angleTurned = currentAngle + angleOffset - startAngle
+				previousAngle = currentAngle
+				
+				print "angleTurned: " + str(angleTurned)
+				if (ccw):
+					arrived = (angleTurned >= angle)
+				else:
+					arrived = (angleTurned <= angle)
+				
+				print arrived
+
+				if (arrived):
+					break
+				else:
+					# send the drive command
+					print("sending vel command" + str(velocityCommand))
 					self._VelocityCommandPublisher.publish(velocityCommand)
 				
 			except (tf.LookupException, tf.ConnectivityException):
@@ -134,7 +214,12 @@ class Driver(object):
 if __name__ == '__main__':
 	try:
 		driver = Driver()
-		driver.DriveForward(distance = -0.5, speed = 0.1);
-	except rospy.ROSInterruptException: pass
+		#driver.DriveX(distance = 2, speed = 0.1);
+		#driver.Turn(angle = math.pi, angularSpeed = 0.3);
+		#driver.DriveX(distance = 2, speed = 0.1);
+		#driver.Turn(angle = -math.pi, angularSpeed = 0.3)
+		driver.Turn(angle = 3 * math.pi, angularSpeed = 0.3);
+	except rospy.ROSInterruptException:
+		pass
 
 

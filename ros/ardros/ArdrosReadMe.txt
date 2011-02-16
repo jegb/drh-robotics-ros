@@ -11,6 +11,8 @@ rosrun ardros arduino.py
 roslaunch ardros teleop.launch
 roslaunch ardros teleopRobot.launch
 
+rosrun ardros DeadReckoning.py
+
 
 In Terminal 3:
 rosrun rviz rviz
