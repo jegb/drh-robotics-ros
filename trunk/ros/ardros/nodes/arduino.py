@@ -98,7 +98,9 @@ class Arduino(object):
 			
 			rosNow = rospy.Time.now()
 			
-			# first, we'll publish the transform over tf
+			# First, we'll publish the transform from frame odom to frame base_link over tf
+			# Note that sendTransform requires that 'to' is passed in before 'from' while
+			# the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
 			self._OdometryTransformBroadcaster.sendTransform(
 				(x, y, 0), 
 				(quaternion.x, quaternion.y, quaternion.z, quaternion.w),
