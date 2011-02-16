@@ -36,7 +36,6 @@ import rospy
 import tf
 from tf import transformations
 import time
-#import numpy
 import math
 
 from geometry_msgs.msg import Twist
@@ -44,8 +43,8 @@ from nav_msgs.msg import Odometry
 
 class Driver(object):
 	'''
-	Implements the logic for driving a given distance by monitoring the transform
-	messages that contain the odometry information class for communicating with an Arduino board over serial port.
+	Implements the logic for driving a given distance or turning for a given amount
+	by monitoring the transform messages that contain the odometry based pose.
 	'''
 
 	def __init__(self):
@@ -121,7 +120,7 @@ class Driver(object):
 			except (tf.LookupException, tf.ConnectivityException):
 				continue
 
-			time.sleep(0.1)
+			rospy.sleep(0.1)
 
 		#stop
 		velocityCommand.linear.x = 0.0
