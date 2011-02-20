@@ -70,3 +70,8 @@ rxloggerlevel &
 rxconsole &
 
 
+Navigation:
+roslaunch my_robot_configuration.launch
+roslaunch move_base.launch
+
+

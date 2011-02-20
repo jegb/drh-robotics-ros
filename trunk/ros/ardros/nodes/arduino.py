@@ -88,7 +88,7 @@ class Arduino(object):
 			vx = float(lineParts[4])
 			omega = float(lineParts[5])
 		
-			#quaternion = tf.transformations.quaternion_about_axis(theta, (0,0,1))
+			#quaternion = tf.transformations.quaternion_from_euler(0, 0, theta)
 			quaternion = Quaternion()
 			quaternion.x = 0.0 
 			quaternion.y = 0.0

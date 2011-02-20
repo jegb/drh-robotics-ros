@@ -1,5 +1,5 @@
 <launch>
   <node name="arduino" pkg="ardros" type="arduino.py">
-    <rosparam file="$(find ardros)/default.yaml" command="load" />
+    <rosparam file="$(find ardros)/info/default.yaml" command="load" />
   </node>
 </launch>
