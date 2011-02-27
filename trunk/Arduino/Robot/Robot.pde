@@ -14,8 +14,8 @@
 // used in the interrupt routines while the motor is running at full speed creating more than
 // 40000 encoder ticks per second per motor.
 
-#define c_UpdateInterval 20 // update interval in milli seconds
-#define c_MaxMotorCV 30   // range is 0 ... 89 (half servo range)
+#define c_UpdateInterval 20  // update interval in milli seconds
+#define c_MaxMotorCV 30      // range is 0 ... 89 (half servo range)
 
 // container for robot params wheel diameter [m], trackwidth [m], ticks per revolution
 RobotParams _RobotParams = RobotParams();
