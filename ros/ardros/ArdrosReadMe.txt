@@ -3,7 +3,7 @@ roscore
 
 In Terminal 2
 roscd ardros
-roslaunch ardros default.launch
+roslaunch ./launch/ardros_standalone.launch
 
 Note: Without using a launch file it could be started this way:
 rosrun ardros arduino.py
@@ -71,7 +71,35 @@ rxconsole &
 
 
 Navigation:
-roslaunch my_robot_configuration.launch
-roslaunch move_base.launch
+roslaunch ./launch/ardros_configuration.launch
+roslaunch ./launch/move_base.launch
+
+
+Increase frequency of laser scan publishing:
+/home/rainer/ni/ni/pointcloud_to_laserscan/launch/kinect_laser.launch
+
+    <param name="max_rate" value="10"/>
+
+Originally was 2
+
+
+
+
+
+
+SLAM:
+Part 1:
+roscd ardros
+roslaunch ./launch/ardros_configuration.launch
+
+Part 2:
+roscd ardros
+roslaunch ./launch/move_base_slam.launch
+
+Part 3:
+After driving around for a while, save the generated map:
+
+roscd ardros
+rosrun map_server map_saver -f ./maps/mymap
 
 

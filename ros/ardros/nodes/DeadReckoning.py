@@ -213,11 +213,11 @@ class Driver(object):
 if __name__ == '__main__':
 	try:
 		driver = Driver()
-		#driver.DriveX(distance = 2, speed = 0.1);
+		driver.DriveX(distance = 2, speed = 0.2);
 		#driver.Turn(angle = math.pi, angularSpeed = 0.3);
 		#driver.DriveX(distance = 2, speed = 0.1);
 		#driver.Turn(angle = -math.pi, angularSpeed = 0.3)
-		driver.Turn(angle = 3 * math.pi, angularSpeed = 0.3);
+		#driver.Turn(angle = 3 * math.pi, angularSpeed = 0.3);
 	except rospy.ROSInterruptException:
 		pass
 
