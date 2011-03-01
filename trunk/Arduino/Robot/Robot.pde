@@ -122,7 +122,8 @@ void DoWork()
   _SpeedController.Update(_BatteryMonitor.VoltageIsTooLow);
   IssueCommands();
     
-  Serial.print("o\t"); // o indicates odometry message
+  Serial.print("o"); // o indicates odometry message
+  Serial.print("\t");
   Serial.print(_OdometricLocalizer.X, 3);
   Serial.print("\t");
   Serial.print(_OdometricLocalizer.Y, 3);
@@ -131,15 +132,18 @@ void DoWork()
   Serial.print("\t");
   Serial.print(_OdometricLocalizer.V, 3);
   Serial.print("\t");
+  Serial.print(_OdometricLocalizer.Omega, 3);
+
+/*
+  Serial.print("\t");
   Serial.print(_OdometricLocalizer.VLeft, 3);
   Serial.print("\t");
   Serial.print(_OdometricLocalizer.VRight, 3);
   Serial.print("\t");
-  Serial.print(_OdometricLocalizer.Omega, 3);
-  Serial.print("\t");
   Serial.print(_LeftEncoderTicks);
   Serial.print("\t");
   Serial.print(_RightEncoderTicks);
+*/
   Serial.print("\n");
 
   Serial.print("b\t"); // o indicates battery info message
