@@ -100,6 +100,6 @@ Part 3:
 After driving around for a while, save the generated map:
 
 roscd ardros
-rosrun map_server map_saver -f ./maps/mymap
+rosrun map_server map_saver -f ./maps/map
 
 
