@@ -1,6 +1,11 @@
 port: /dev/ttyUSB0
 baudRate: 115200
 batteryMonitorParams: {voltageTooLowlimit: 11.7}
-differentialDriveOdomParams: {wheelDiameter: 0.0763, trackWidth: 0.37, countsPerRevolution: 9750}
-differentialDriveGains: {velocityPParam: 0.1, velocityIParam: 0.1, turnPParam: 0.4, turnIParam: 0.5} 
+
+# wheel diameter [m], trackwidth [m], ticks per revolution
+driveGeometry: {wheelDiameter: 0.0763, trackWidth: 0.37, countsPerRevolution: 9750}
+
+# The speed controller parameters inlcude the P and I gains for the three PI controllers and the command timeout for the speed controller in seconds.
+# If no velocity command arrives for more than the specified timeout then the speed controller will stop the robot.
+speedController: {velocityPParam: 0.1, velocityIParam: 0.1, turnPParam: 0.4, turnIParam: 0.5, commandTimeout: 1.0} 
 

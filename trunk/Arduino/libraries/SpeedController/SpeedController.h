@@ -17,6 +17,8 @@ class SpeedController
 {
 private:
 	float _PParam, _IParam, _DParam;
+	float _CommandTimeout;
+	long _MillisecsLastCommand;
 	OdometricLocalizer* _pOdometricLocalizer;
 
 	RobotParams* _pRobotParams;
@@ -51,10 +53,10 @@ private:
 		RightError = 0.0;	
 		TurnError = 0.0;	
 		NormalizedLeftCV = 0.0;
-		NormalizedLeftCV = 0.0;
+		NormalizedRightCV = 0.0;
 
-		DesiredVelocity = 0.0;
-		DesiredAngularVelocity = 0.0;
+		CommandedVelocity = 0.0;
+		CommandedAngularVelocity = 0.0;
 	}
 	
 public:
@@ -67,8 +69,8 @@ public:
 	float TurnPParam;
 	float TurnIParam;
 
-	float DesiredVelocity;
-	float DesiredAngularVelocity;
+	float CommandedVelocity;
+	float CommandedAngularVelocity;
 
 	float LeftError;
 	float RightError;
@@ -93,11 +95,11 @@ public:
 		TurnPParam = 0.0;
 		TurnIParam = 0.0;
 
-		DesiredVelocity = 0.0;
-		DesiredAngularVelocity = 0.0;
+		CommandedVelocity = 0.0;
+		CommandedAngularVelocity = 0.0;
 	}
 	
-	void Initialize(float velocityPParam, float velocityIParam, float turnPParam, float turnIParam)
+	void Initialize(float velocityPParam, float velocityIParam, float turnPParam, float turnIParam, float commandTimeout)
 	{
 		VelocityPParam = velocityPParam;
 		VelocityIParam = velocityIParam;
@@ -108,8 +110,18 @@ public:
 		// Avoiding runaway integral error contributions
 		_MaxVelocityErrorIntegral = 1 / VelocityIParam;
 		_MaxTurnErrorIntegral = 1 / TurnIParam;
+		
+		_CommandTimeout = commandTimeout;
+		_MillisecsLastCommand = millis();
 
 		IsInitialized = true;
+	}
+	
+	void CommandVelocity(float commandedVelocity, float commandedAngularVelocity)
+	{
+		CommandedVelocity = commandedVelocity;
+		CommandedAngularVelocity = commandedAngularVelocity;
+		_MillisecsLastCommand = millis();
 	}
 	
 	void Update(bool batteryVoltageIsTooLow)
@@ -121,10 +133,19 @@ public:
 			return;
 		}
 
-		float angularVelocityOffset = 0.5 * DesiredAngularVelocity * _pRobotParams->TrackWidth;
+		// How long has it been since we received the last command
+		float secondsSinceLastCommand = (millis() - _MillisecsLastCommand) / 1000.0;
+		if (secondsSinceLastCommand > _CommandTimeout)
+		{
+			// we need to stop the motors and stop accumulating errors
+			Reset();
+			return;
+		}
+
+		float angularVelocityOffset = 0.5 * CommandedAngularVelocity * _pRobotParams->TrackWidth;
 		
-		float expectedLeftSpeed = DesiredVelocity - angularVelocityOffset;
-		float expectedRightSpeed = DesiredVelocity + angularVelocityOffset;
+		float expectedLeftSpeed = CommandedVelocity - angularVelocityOffset;
+		float expectedRightSpeed = CommandedVelocity + angularVelocityOffset;
 
 		LeftError = expectedLeftSpeed - _pOdometricLocalizer->VLeft;
 		RightError = expectedRightSpeed - _pOdometricLocalizer->VRight;

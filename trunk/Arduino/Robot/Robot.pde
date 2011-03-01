@@ -157,7 +157,7 @@ void RequestInitialization()
     {
       _IsInitialized = false;
 
-      Serial.print("InitializeDifferentialDriveOdomParams"); // requesting initialization of the parameters of the differential drive needed for odometry calculations
+      Serial.print("InitializeDriveGeometry"); // requesting initialization of the parameters of the differential drive needed for odometry calculations
       Serial.print("\n");
     }
 
@@ -165,7 +165,7 @@ void RequestInitialization()
     {
       _IsInitialized = false;
 
-      Serial.print("InitializeDifferentialDriveGains"); // requesting initialization of the speed controller
+      Serial.print("InitializeSpeedController"); // requesting initialization of the speed controller
       Serial.print("\n");
     }
     
@@ -186,7 +186,6 @@ void IssueCommands()
   normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
   
   /*
-  */
   Serial.print("Speed: ");
   Serial.print(_SpeedController.DesiredVelocity);
   Serial.print("\t");
@@ -202,10 +201,10 @@ void IssueCommands()
   Serial.print("\t");
   Serial.print(normalizedLeftMotorCV);
   Serial.print("\n");
+  */
   
   float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
   float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
- 
  
   /*
   Serial.print("Servos: ");
@@ -266,15 +265,15 @@ void OnMssageCompleted()
     return;
   }
 
-  if (_Messenger.checkString("DifferentialDriveOdomParams"))
+  if (_Messenger.checkString("DriveGeometry"))
   {
-    SetDifferentialDriveOdomParams();
+    InitializeDriveGeometry();
     return;
   }
 
-  if (_Messenger.checkString("DifferentialDriveGains"))
+  if (_Messenger.checkString("SpeedControllerParams"))
   {
-    SetDifferentialDriveGains();
+    InitializeSpeedControllerParams();
     return;
   }
   
@@ -292,12 +291,13 @@ void OnMssageCompleted()
 
 void SetSpeed()
 {
-  _SpeedController.DesiredVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
-  _SpeedController.DesiredAngularVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float commandedVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float commandedAngularVelocity = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  _SpeedController.CommandVelocity(commandedVelocity, commandedAngularVelocity); 
 }
 
 // set robot params wheel diameter [m], trackwidth [m], ticks per revolution
-void SetDifferentialDriveOdomParams()
+void InitializeDriveGeometry()
 {
   float wheelDiameter = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   float trackWidth = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
@@ -306,15 +306,17 @@ void SetDifferentialDriveOdomParams()
   _RobotParams.Initialize(wheelDiameter, trackWidth, countsPerRevolution);
 }
 
-void SetDifferentialDriveGains()
+void InitializeSpeedControllerParams()
 {
   float velocityPParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   float velocityIParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   float turnPParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   float turnIParam = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
+  float commandTimeout = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   
-  _SpeedController.Initialize(velocityPParam, velocityIParam, turnPParam, turnIParam);
+  _SpeedController.Initialize(velocityPParam, velocityIParam, turnPParam, turnIParam, commandTimeout);
 
+  /*
   Serial.print("PID Params: ");
   Serial.print(velocityPParam);
   Serial.print("\t");
@@ -324,6 +326,7 @@ void SetDifferentialDriveGains()
   Serial.print("\t");
   Serial.print(turnIParam);
   Serial.print("\n");
+  */
 }
 
 void InitializeBatteryMonitor()
@@ -331,9 +334,11 @@ void InitializeBatteryMonitor()
   float voltageTooLowlimit = GetFloatFromBaseAndExponent(_Messenger.readInt(), _Messenger.readInt());
   _BatteryMonitor.InitializeLowVoltageLimit(voltageTooLowlimit);
 
+  /*
   Serial.print("battery monitor Params: ");
   Serial.print(voltageTooLowlimit);
   Serial.print("\n");
+  */
 }
 
 float GetFloatFromBaseAndExponent(int base, int exponent)

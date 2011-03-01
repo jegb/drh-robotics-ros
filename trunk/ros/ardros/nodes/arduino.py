@@ -61,13 +61,13 @@ class Arduino(object):
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
 				return
-			if (lineParts[0] == "InitializeDifferentialDriveOdomParams"):
+			if (lineParts[0] == "InitializeDriveGeometry"):
 				# controller requesting initialization
-				self._InitializeDifferentialDriveOdomParams()
+				self._InitializeDriveGeometry()
 				return
-			if (lineParts[0] == "InitializeDifferentialDriveGains"):
+			if (lineParts[0] == "InitializeSpeedController"):
 				# controller requesting initialization
-				self._InitializeDifferentialDriveGains()
+				self._InitializeSpeedController()
 				return
 			if (lineParts[0] == "InitializeBatteryMonitor"):
 				# controller requesting initialization
@@ -176,43 +176,52 @@ class Arduino(object):
 		rospy.logdebug("Sending speed command message: " + message)
 		self._SerialDataGateway.Write(message)
 
-	def _InitializeDifferentialDriveOdomParams(self):
-		wheelDiameter = rospy.get_param("~differentialDriveOdomParams/wheelDiameter", "0")
-		trackWidth = rospy.get_param("~differentialDriveOdomParams/trackWidth", "0")
-		countsPerRevolution = rospy.get_param("~differentialDriveOdomParams/countsPerRevolution", "0")
+	def _InitializeDriveGeometry(self):
+		wheelDiameter = rospy.get_param("~driveGeometry/wheelDiameter", "0")
+		trackWidth = rospy.get_param("~driveGeometry/trackWidth", "0")
+		countsPerRevolution = rospy.get_param("~driveGeometry/countsPerRevolution", "0")
 
 		wheelDiameterParts = self._GetBaseAndExponent(wheelDiameter)
 		trackWidthParts = self._GetBaseAndExponent(trackWidth)
 
-		message = 'DifferentialDriveOdomParams %d %d %d %d %d\r' % (wheelDiameterParts[0], wheelDiameterParts[1], trackWidthParts[0], trackWidthParts[1], countsPerRevolution)
-		rospy.logdebug("Sending differential drive odom params message: " + message)
+		message = 'DriveGeometry %d %d %d %d %d\r' % (wheelDiameterParts[0], wheelDiameterParts[1], trackWidthParts[0], trackWidthParts[1], countsPerRevolution)
+		rospy.logdebug("Sending drive geometry params message: " + message)
 		self._SerialDataGateway.Write(message)
 
-	def _InitializeDifferentialDriveGains(self):
-		velocityPParam = rospy.get_param("~differentialDriveGains/velocityPParam", "0")
-		velocityIParam = rospy.get_param("~differentialDriveGains/velocityIParam", "0")
-		turnPParam = rospy.get_param("~differentialDriveGains/turnPParam", "0")
-		turnIParam = rospy.get_param("~differentialDriveGains/turnIParam", "0")
+	def _InitializeSpeedController(self):
+		velocityPParam = rospy.get_param("~speedController/velocityPParam", "0")
+		velocityIParam = rospy.get_param("~speedController/velocityIParam", "0")
+		turnPParam = rospy.get_param("~speedController/turnPParam", "0")
+		turnIParam = rospy.get_param("~speedController/turnIParam", "0")
+		commandTimeout = self._GetCommandTimeoutForSpeedController()
 
-		driveGains = (velocityPParam, velocityIParam, turnPParam, turnIParam)
-		#rospy.loginfo(str(driveGains))
-		self._WriteDriveGains(driveGains)
+		speedControllerParams = (velocityPParam, velocityIParam, turnPParam, turnIParam, commandTimeout)
+		#rospy.loginfo(str(speedControllerParams))
+		self._WriteSpeedControllerParams(speedControllerParams)
+	
+	def _GetCommandTimeoutForSpeedController(self):
+		"""
+		Returns the command timeout for the speed controller in seconds.
+		If no velocity command arrives for more than the specified timeout then the speed controller will stop the robot.
+		"""
+		return rospy.get_param("~speedController/commandTimeout", "0.5")
 
 	def _HandleSetDriveGains(self, request):
 		""" Handle the setting of the drive gains (PID). """
 		
 		# We persist the new values in the parameter server
-		rospy.set_param("~differentialDriveGains", {'velocityPParam': request.velocityPParam, 'velocityPParam': request.velocityIParam, 'turnPParam': request.turnPParam, 'turnIParam': request.turnIParam})
+		rospy.set_param("~speedController", {'velocityPParam': request.velocityPParam, 'velocityPParam': request.velocityIParam, 'turnPParam': request.turnPParam, 'turnIParam': request.turnIParam})
 		
-		driveGains = (request.velocityPParam, request.velocityIParam, request.turnPParam, request.turnIParam)
-		self._WriteDriveGains(driveGains)
+		commandTimeout = self._GetCommandTimeoutForSpeedController()
+		speedControllerParams = (request.velocityPParam, request.velocityIParam, request.turnPParam, request.turnIParam, commandTimeout)
+		self._WriteSpeedControllerParams(speedControllerParams)
 		return SetDriveControlGainsResponse()
 
-	def _WriteDriveGains(self, driveGains):
-		""" Writes the drive gains (PID) to the Arduino controller. """
-		rospy.logdebug("Handling 'SetDriveGains'; received parameters " + str(driveGains))
+	def _WriteSpeedControllerParams(self, speedControllerParams):
+		""" Writes the speed controller parameters (drive gains (PID), and command timeout) to the Arduino controller. """
+		rospy.logdebug("Handling '_WriteSpeedControllerParams'; received parameters " + str(speedControllerParams))
 		
-		message = 'DifferentialDriveGains %d %d %d %d %d %d %d %d\r' % self._GetBaseAndExponents(driveGains)
+		message = 'SpeedControllerParams %d %d %d %d %d %d %d %d %d %d\r' % self._GetBaseAndExponents(speedControllerParams)
 		rospy.logdebug("Sending differential drive gains message: " + message)
 		self._SerialDataGateway.Write(message)
 
