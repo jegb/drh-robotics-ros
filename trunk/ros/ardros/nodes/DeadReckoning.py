@@ -56,6 +56,8 @@ class Driver(object):
 
 		rospy.init_node('DeadReckoning')
 		
+		self.UseDegrees = True
+		
 		self._VelocityCommandPublisher = rospy.Publisher("cmd_vel", Twist)
 		self._TransformListener = tf.TransformListener()
 		# wait for the listener to get the first message
@@ -88,20 +90,13 @@ class Driver(object):
 			velocityCommand.linear.x = -speed # going forward m/s
 			
 		velocityCommand.angular.z = 0.0 # no angular velocity
-		#rate = rospy.Rate(10.0) # update rate in Hz
 
 		while True:
 			try:
 				(currentTranslation, currentRotation) = self._TransformListener.lookupTransform("/base_link", "/odom", rospy.Time(0))
-				#currentTransform = transformer.fromTranslationRotation(currentTranslation, currentRotation)
-				
-				#invertedStartTransform = numpy.linalg.inv(startTransform)
-				#relativeTransform = numpy.dot(invertedStartTransform, currentTransform);
-				#print relativeTransform
 				
 				dx = currentTranslation[0] - startTranslation[0]
 				dy = currentTranslation[1] - startTranslation[1]
-				#dy = currentTranslation[2] - startTranslation[2]
 				
 				distanceMoved = math.sqrt(dx * dx + dy * dy)
 				print distanceMoved
@@ -206,7 +201,6 @@ class Driver(object):
 		self._VelocityCommandPublisher.publish(velocityCommand)
 		
 		return done
-
 
 if __name__ == '__main__':
 	try:
