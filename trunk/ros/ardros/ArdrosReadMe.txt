@@ -71,6 +71,7 @@ rxconsole &
 
 
 Navigation:
+roscd ardros
 roslaunch ./launch/ardros_configuration.launch
 roslaunch ./launch/move_base.launch
 
@@ -84,7 +85,7 @@ Originally was 2
 
 
 
-
+rainer@rainer-laptop:~/ni/ni/openni_camera/launch$ roslaunch openni_camera openni_kinect.launch
 
 
 SLAM:
