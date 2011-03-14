@@ -48,15 +48,7 @@ class Driver(object):
 	'''
 
 	def __init__(self):
-		'''
-		Initializes the receiver class. 
-		port: The serial port to listen to.
-		baudrate: Baud rate for the serial communication
-		'''
-
 		rospy.init_node('DeadReckoning')
-		
-		self.UseDegrees = True
 		
 		self._VelocityCommandPublisher = rospy.Publisher("cmd_vel", Twist)
 		self._TransformListener = tf.TransformListener()
