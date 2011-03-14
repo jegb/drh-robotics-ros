@@ -60,8 +60,9 @@ class Driver(object):
 		
 		self._VelocityCommandPublisher = rospy.Publisher("cmd_vel", Twist)
 		self._TransformListener = tf.TransformListener()
-		# wait for the listener to get the first message
-		self._TransformListener.waitForTransform("/base_link", "/odom", rospy.Time(), rospy.Duration(1.0))
+
+		# wait for the listener to get the first transform message
+		self._TransformListener.waitForTransform("/odom", "/base_link", rospy.Time(), rospy.Duration(4.0))
 
 	def DriveX(self, distance, speed):
 		'''
@@ -72,14 +73,12 @@ class Driver(object):
 
 		forward = (distance >= 0)
 		
-		# record the starting transform from the odometry to the base frame
-		(startTranslation, startRotation) = self._TransformListener.lookupTransform("/base_link", "/odom", rospy.Time(0))
+		# record the starting transform from the odom to the base_link frame
+		# Note that here the 'from' frame precedes 'to' frame which is opposite to how they are
+		# ordered in tf.TransformBroadcaster's sendTransform function.
 		# startTranslation is a tuple holding the x,y,z components of the translation vector
 		# startRotation is a tuple holding the four components of the quaternion
-		
-		#transformer = tf.TransformerROS(True, rospy.Duration(1.0))
-		# for details related to the TransformerROS class see http://www.ros.org/wiki/tf/TfUsingPython
-		#startTransform = transformer.fromTranslationRotation(startTranslation, startRotation)
+		(startTranslation, startRotation) = self._TransformListener.lookupTransform("/odom", "/base_link", rospy.Time(0))
 		
 		done = False
 
@@ -93,7 +92,7 @@ class Driver(object):
 
 		while True:
 			try:
-				(currentTranslation, currentRotation) = self._TransformListener.lookupTransform("/base_link", "/odom", rospy.Time(0))
+				(currentTranslation, currentRotation) = self._TransformListener.lookupTransform("/odom", "/base_link", rospy.Time(0))
 				
 				dx = currentTranslation[0] - startTranslation[0]
 				dy = currentTranslation[1] - startTranslation[1]
@@ -133,10 +132,6 @@ class Driver(object):
 		'''
 
 		ccw = (angle >= 0) # counter clockwise rotation
-		# Wait for the listener to get the first tranform from the odom frame to the base_link frame.
-		# Note that here the 'from' frame precedes 'to' frame which is opposite to how they are
-		# ordered in tf.TransformBroadcaster's sendTransform function.
-		self._TransformListener.waitForTransform("/odom", "/base_link", rospy.Time(), rospy.Duration(4.0))
 		
 		# record the starting transform from the odom to the base frame
 		# Note that here the 'from' frame precedes 'to' frame which is opposite to how they are
@@ -205,7 +200,7 @@ class Driver(object):
 if __name__ == '__main__':
 	try:
 		driver = Driver()
-		driver.DriveX(distance = 2, speed = 0.2);
+		driver.DriveX(distance = 2, speed = 0.1);
 		driver.Turn(angle = math.pi, angularSpeed = 0.3);
 		driver.DriveX(distance = 2, speed = 0.1);
 		driver.Turn(angle = -math.pi, angularSpeed = 0.3)
