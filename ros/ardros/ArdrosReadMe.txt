@@ -91,11 +91,11 @@ rainer@rainer-laptop:~/ni/ni/openni_camera/launch$ roslaunch openni_camera openn
 SLAM:
 Part 1:
 roscd ardros
-roslaunch ./launch/ardros_configuration.launch
+roslaunch ./launch/slam.launch
 
-Part 2 (slam)
+Part 2: Launch rviz
 roscd ardros
-roslaunch ./launch/gmapping.launch
+rosrun rviz rviz -d ./rviz/slam.vcg
 
 Part 3:
 After driving around for a while, save the generated map:
