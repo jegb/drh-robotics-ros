@@ -93,9 +93,9 @@ Part 1:
 roscd ardros
 roslaunch ./launch/ardros_configuration.launch
 
-Part 2:
+Part 2 (slam)
 roscd ardros
-roslaunch ./launch/move_base_slam.launch
+roslaunch ./launch/gmapping.launch
 
 Part 3:
 After driving around for a while, save the generated map:
