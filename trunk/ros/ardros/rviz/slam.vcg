@@ -6,9 +6,9 @@ Target\ Frame=<Fixed Frame>
 Axes.Enabled=1
 Axes.Length=0.5
 Axes.Radius=0.1
-Axes.Reference\ Frame=<Fixed Frame>
+Axes.Reference\ Frame=/base_link
 Grid.Alpha=0.5
-Grid.Cell\ Size=0.1
+Grid.Cell\ Size=0.5
 Grid.ColorR=0.141176
 Grid.ColorG=0.686275
 Grid.ColorB=0.819608
@@ -48,12 +48,6 @@ Laser\ Scan..IntensityMin\ ColorR=0
 Laser\ Scan..IntensityMin\ ColorG=0
 Laser\ Scan..IntensityMin\ ColorB=0
 Laser\ Scan..IntensityMin\ Intensity=0
-Robot\ Footprint.Alpha=1
-Robot\ Footprint.ColorR=1
-Robot\ Footprint.ColorG=0.0980392
-Robot\ Footprint.ColorB=0
-Robot\ Footprint.Enabled=1
-Robot\ Footprint.Topic=/move_base/local_costmap/robot_footprint
 Static\ Map.Alpha=0.7
 Static\ Map.Draw\ Behind=0
 Static\ Map.Enabled=1
@@ -68,8 +62,8 @@ TF.Update\ Interval=0
 Tool\ 2D\ Nav\ GoalTopic=move_base_simple/goal
 Tool\ 2D\ Pose\ EstimateTopic=initialpose
 Camera\ Type=rviz::FixedOrientationOrthoViewController
-Camera\ Config=65.7444 0.241079 6.32672 0.683942 -0.706541 0.0282767 0.0282767 0.706541
-Property\ Grid\ State=selection=;expanded=.Global Options,Grid.Enabled,Robot Footprint.Enabled,Laser Scan.Enabled,Laser Scan.Enabled.Laser Scan.StatusTopStatus,TF.Enabled.TF.StatusTopStatus,TF.Enabled.TF.Tree,Axes.Enabled;scrollpos=0,11;splitterpos=214,431;ispageselected=1
+Camera\ Config=54.2562 0 6.32672 0 -0.707105 0.00176775 0.00176775 0.707105
+Property\ Grid\ State=selection=Grid.Enabled.Grid.Line Style;expanded=.Global Options,Grid.Enabled,Laser Scan.Enabled,TF.Enabled.TF.StatusTopStatus,TF.Enabled.TF.Tree,Axes.Enabled;scrollpos=0,0;splitterpos=214,431;ispageselected=1
 [Display0]
 Name=Grid
 Package=rviz
@@ -79,18 +73,14 @@ Name=Static Map
 Package=rviz
 ClassName=rviz::MapDisplay
 [Display2]
-Name=Robot Footprint
-Package=rviz
-ClassName=rviz::PolygonDisplay
-[Display3]
 Name=Laser Scan
 Package=rviz
 ClassName=rviz::LaserScanDisplay
-[Display4]
+[Display3]
 Name=TF
 Package=rviz
 ClassName=rviz::TFDisplay
-[Display5]
+[Display4]
 Name=Axes
 Package=rviz
 ClassName=rviz::AxesDisplay
