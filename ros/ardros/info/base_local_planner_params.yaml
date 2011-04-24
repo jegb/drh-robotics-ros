@@ -1,4 +1,5 @@
 TrajectoryPlannerROS:
+  # for details see: http://www.ros.org/wiki/base_local_planner
   max_vel_x: 0.2
   min_vel_x: 0.05
   max_rotational_vel: 0.5
@@ -9,3 +10,9 @@ TrajectoryPlannerROS:
   acc_lim_y: 0
 
   holonomic_robot: false
+
+  # goal tolerance parameters
+  yaw_goal_tolerance: 0.1
+  xy_goal_tolerance: 0.2
+  latch_xy_goal_tolerance: true
+

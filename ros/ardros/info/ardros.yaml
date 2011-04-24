@@ -1,6 +1,6 @@
 port: /dev/ttyUSB0
 baudRate: 115200
-batteryMonitorParams: {voltageTooLowlimit: 11.7}
+batteryStateParams: {voltageLowlimit: 12.0, voltageLowLowlimit: 11.7}
 
 # wheel diameter [m], trackwidth [m], ticks per revolution
 driveGeometry: {wheelDiameter: 0.0763, trackWidth: 0.37, countsPerRevolution: 9750}

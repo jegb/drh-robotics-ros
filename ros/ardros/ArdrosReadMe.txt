@@ -1,7 +1,3 @@
-In Terminal 1
-roscore
-
-In Terminal 2
 roscd ardros
 roslaunch ./launch/ardros_standalone.launch
 
@@ -70,18 +66,6 @@ rxloggerlevel &
 rxconsole &
 
 
-Navigation:
-roscd ardros
-roslaunch ./launch/ardros_configuration.launch
-roslaunch ./launch/move_base.launch
-
-
-Increase frequency of laser scan publishing:
-/home/rainer/ni/ni/pointcloud_to_laserscan/launch/kinect_laser.launch
-
-    <param name="max_rate" value="10"/>
-
-Originally was 2
 
 
 
@@ -103,4 +87,33 @@ After driving around for a while, save the generated map:
 roscd ardros
 rosrun map_server map_saver -f ./maps/map
 
+
+
+
+Navigation:
+Part 1:
+
+roslaunch `rospack find ardros`/launch/navigation.launch
+
+Note: You might need to change the path to the map in move_base.launch
+
+Part 2: Launch rviz
+rosrun rviz rviz -d `rospack find ardros`/rviz/navigation.vcg
+
+Set current pose and goal. Optionally monitor status:
+rostopic echo /move_base/status
+
+[Previously was:
+roscd ardros
+roslaunch ./launch/ardros_configuration.launch
+roslaunch ./launch/move_base.launch
+]
+
+
+Increase frequency of laser scan publishing:
+/home/rainer/ni/ni/pointcloud_to_laserscan/launch/kinect_laser.launch
+
+    <param name="max_rate" value="10"/>
+
+Originally was 2
 
