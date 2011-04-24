@@ -146,10 +146,10 @@ void DoWork()
 */
   Serial.print("\n");
 
-  Serial.print("b\t"); // o indicates battery info message
+  Serial.print("b\t"); // b indicates battery info message
   Serial.print(_BatteryMonitor.BatteryVoltage, 3);
-  Serial.print("\t");
-  Serial.print(_BatteryMonitor.VoltageIsTooLow);
+  //Serial.print("\t");
+  //Serial.print(_BatteryMonitor.VoltageIsTooLow);
   Serial.print("\n");
 }
 

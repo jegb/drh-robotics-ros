@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find ardros)/launch/ardros_configuration.launch"/>
+	<include file="$(find ardros)/launch/move_base.launch"/>
+</launch>
