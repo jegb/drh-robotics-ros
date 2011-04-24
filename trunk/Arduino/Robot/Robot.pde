@@ -85,9 +85,7 @@ void SetupEncoders()
   // Right encoder
   pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
   digitalWrite(c_RightEncoderPinA, LOW);  // turn on pullup resistors
-  pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
-  digitalWrite(26, LOW);  // turn on pullup resistors
-  pinMode(26, INPUT);      // sets pin B as input
+  pinMode(c_RightEncoderPinB, INPUT);      // sets pin B as input
   digitalWrite(c_RightEncoderPinB, LOW);  // turn on pullup resistors
   _RightEncoderASet = digitalReadFast(c_RightEncoderPinA);   // read the input pin
   _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin
