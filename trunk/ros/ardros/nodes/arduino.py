@@ -138,6 +138,7 @@ class Arduino(object):
 	def _BroadcastBatteryInfo(self, lineParts):
 		partsCount = len(lineParts)
 		#rospy.logwarn(partsCount)
+
 		if (partsCount  < 1):
 			pass
 		
@@ -147,9 +148,9 @@ class Arduino(object):
 			batteryState.voltage = batteryVoltage
 			
 			if (batteryVoltage <= self._VoltageLowlimit):
-				batteryState.isLow = true
+				batteryState.isLow = 1
 			if (batteryVoltage <= self._VoltageLowLowlimit):
-				batteryState.isLowLow = true;
+				batteryState.isLowLow = 1;
 
 			self._BatteryStatePublisher.publish(batteryState)
 			
@@ -181,7 +182,6 @@ class Arduino(object):
 
 		self._OdometryTransformBroadcaster = tf.TransformBroadcaster()
 		self._OdometryPublisher = rospy.Publisher("odom", Odometry)
-
 
 		self._VoltageLowlimit = rospy.get_param("~batteryStateParams/voltageLowlimit", "12.0")
 		self._VoltageLowLowlimit = rospy.get_param("~batteryStateParams/voltageLowLowlimit", "11.7")
