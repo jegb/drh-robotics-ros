@@ -14,7 +14,6 @@
 #define c_LeftEncoderPinA 19
 #define c_LeftEncoderPinB 25
 #define LeftEncoderIsReversed
-volatile bool _LeftEncoderASet;
 volatile bool _LeftEncoderBSet;
 volatile long _LeftEncoderTicks = 0;
 
@@ -22,7 +21,6 @@ volatile long _LeftEncoderTicks = 0;
 #define c_RightEncoderInterrupt 5
 #define c_RightEncoderPinA 18
 #define c_RightEncoderPinB 24
-volatile bool _RightEncoderASet;
 volatile bool _RightEncoderBSet;
 volatile long _RightEncoderTicks = 0;
 
@@ -45,18 +43,14 @@ void setup()
   digitalWrite(c_LeftEncoderPinA, LOW);  // turn on pullup resistors
   pinMode(c_LeftEncoderPinB, INPUT);      // sets pin B as input
   digitalWrite(c_LeftEncoderPinB, LOW);  // turn on pullup resistors
-  _LeftEncoderBSet = digitalReadFast(c_LeftEncoderPinB);   // read the input pin
   attachInterrupt(c_LeftEncoderInterrupt, HandleLeftMotorInterruptA, RISING);
 
   // Right encoder
   pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
   digitalWrite(c_RightEncoderPinA, LOW);  // turn on pullup resistors
-  pinMode(c_RightEncoderPinA, INPUT);      // sets pin A as input
-  digitalWrite(26, LOW);  // turn on pullup resistors
-  pinMode(26, INPUT);      // sets pin B as input
+  pinMode(c_RightEncoderPinB, INPUT);      // sets pin B as input
   digitalWrite(c_RightEncoderPinB, LOW);  // turn on pullup resistors
-  _RightEncoderBSet = digitalReadFast(c_RightEncoderPinB);   // read the input pin
-  attachInterrupt(c_RightEncoderInterrupt, HandleRightMotorInterruptA, RISING);
+  attachInterrupt(c_RightEncoderInterrupt, HandleRightMotorInterruptA, RISING); 
 }
 
 void loop()
