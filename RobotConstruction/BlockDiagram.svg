@@ -1,0 +1,790 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="BlockDiagram.svg"
+   inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/BlockDiagram.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.7232337"
+     inkscape:cx="314.08659"
+     inkscape:cy="905.53707"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="848"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
+  <defs
+     id="defs4">
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lstart"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lstart">
+      <path
+         transform="scale(1.1) translate(1,0)"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round"
+         id="path4248" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;">
+      <path
+         id="path4239"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path4251"
+         style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path4233"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;marker-start:none;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective3603"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3633"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3665"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3700"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3731"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3760"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3794"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3840"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3867"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3899"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3927"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3955"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3983"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4034"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4119"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4155"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4186"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2LendN"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2LendN"
+       style="overflow:visible;">
+      <path
+         id="path5289"
+         style="stroke-linejoin:round;font-size:12.0;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.62500000;fill:#ff0000"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2LstartS"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow2LstartS">
+      <path
+         transform="scale(1.1) translate(1,0)"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         style="stroke-linejoin:round;font-size:12.0;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.62500000;fill:#ff0000"
+         id="path6627" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2LendNO"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2LendNO"
+       style="overflow:visible;">
+      <path
+         id="path6630"
+         style="stroke-linejoin:round;font-size:12.0;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.62500000;fill:#ff0000"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <inkscape:perspective
+       id="perspective6841"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow2LendN"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2LendN-2"
+       style="overflow:visible">
+      <path
+         id="path5289-3"
+         style="font-size:12px;fill:#ff0000;fill-rule:evenodd;stroke:#ff0000;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       id="perspective6869"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6897"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#008080;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2816"
+       width="59.875778"
+       height="85.277626"
+       x="52.618111"
+       y="88.906464"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <rect
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.56358032999999996px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2818"
+       width="3.3802087"
+       height="19.798058"
+       x="115.84386"
+       y="93.058922"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <rect
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:0.56358033px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2818-9"
+       width="3.3802087"
+       height="19.798058"
+       x="45.77615"
+       y="93.111763"
+       inkscape:transform-center-x="56.377966"
+       inkscape:transform-center-y="4.0163722"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <rect
+       style="fill:#00ffff;stroke:#000000;stroke-opacity:1"
+       id="rect3617"
+       width="30.494678"
+       height="20.081861"
+       x="67.832062"
+       y="100.63071"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="69.39312"
+       y="112.86028"
+       id="text3619"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621"
+         x="69.39312"
+         y="112.86028"
+         style="font-size:7.06273794px">Arduino</tspan></text>
+    <rect
+       style="fill:#ffdd55;stroke:#000000;stroke-width:0.9773491;stroke-opacity:1"
+       id="rect3623"
+       width="252.94626"
+       height="148.81265"
+       x="152.19183"
+       y="55.901024"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="160.29921"
+       y="71.189507"
+       id="text3619-7"
+       inkscape:transform-center-x="-3.2793523"
+       inkscape:transform-center-y="15.303644"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-9"
+         x="160.29921"
+         y="71.189507"
+         style="font-size:13px">ardros Package</tspan></text>
+    <rect
+       style="fill:#ffdd55;stroke:#000000;stroke-width:0.6546064;stroke-opacity:1"
+       id="rect3623-7"
+       width="113.22662"
+       height="149.13539"
+       x="415.28699"
+       y="55.668163"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="422.6543"
+       y="71.118011"
+       id="text3619-7-0"
+       inkscape:transform-center-x="-3.2793523"
+       inkscape:transform-center-y="15.303644"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-9-3"
+         x="422.6543"
+         y="71.118011"
+         style="font-size:13px">joy Package</tspan></text>
+    <g
+       id="g4021"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <rect
+         y="92.240715"
+         x="171.61943"
+         height="100.20243"
+         width="76.153847"
+         id="rect3655"
+         style="fill:#ff7f2a;stroke:#000000;stroke-opacity:1;fill-opacity:1" />
+      <text
+         id="text3619-3"
+         y="103.25428"
+         x="174.87411"
+         style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-size:9px"
+           y="103.25428"
+           x="174.87411"
+           id="tspan3621-7"
+           sodipodi:role="line">arduino node</tspan></text>
+    </g>
+    <path
+       style="stroke-linejoin:miter;marker-end:url(#Arrow2LendNO);stroke-opacity:1;marker-start:url(#Arrow2LstartS);stroke:#ff0000;stroke-linecap:butt;stroke-width:1px;fill:none"
+       d="m 98.380568,117.38241 73.238872,0"
+       id="path3690"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="133.31947"
+       y="126.41219"
+       id="text3619-9"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-3"
+         x="133.31947"
+         y="126.41219"
+         style="font-size:7.06273794px;text-align:center;text-anchor:middle">Serial</tspan><tspan
+         sodipodi:role="line"
+         x="133.31947"
+         y="135.24062"
+         style="font-size:7.06273794px;text-align:center;text-anchor:middle"
+         id="tspan3717">Communication</tspan></text>
+    <g
+       id="g3828"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         id="path3719"
+         d="m 247.77328,102.98565 10.5668,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         transform="translate(0,0.54251006)"
+         d="m 261.79627,102.44314 a 3.0918031,3.0918031 0 1 1 -6.18361,0 3.0918031,3.0918031 0 1 1 6.18361,0 z"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721"
+         style="fill:#000000;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="253.2142"
+       y="97.788704"
+       id="text3619-6"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1"
+         x="253.2142"
+         y="97.788704"
+         style="font-size:7.06273794px">serial</tspan></text>
+    <g
+       id="g3822"
+       transform="translate(0,-2)"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         id="path3719-7"
+         d="m 247.95718,124.65747 10.5668,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         transform="translate(0.18390006,22.214332)"
+         d="m 261.79627,102.44314 c 0,1.70755 -1.38425,3.0918 -3.0918,3.0918 -1.70756,0 -3.09181,-1.38425 -3.09181,-3.0918 0,-1.70756 1.38425,-3.091805 3.09181,-3.091805 1.70755,0 3.0918,1.384245 3.0918,3.091805 z"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-0"
+         style="fill:#000000;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="253.3981"
+       y="117.4605"
+       id="text3619-6-8"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1-1"
+         x="253.3981"
+         y="117.4605"
+         style="font-size:7.06273794px">odom</tspan></text>
+    <g
+       transform="translate(0,22)"
+       id="g3816"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         sodipodi:nodetypes="cc"
+         id="path3719-0"
+         d="m 248.10592,142.15799 7.6914,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:open="true"
+         sodipodi:end="4.7823519"
+         sodipodi:start="1.4511499"
+         transform="translate(0.33263706,39.716607)"
+         d="m 259.07351,105.51284 c -1.69535,0.20381 -3.23493,-1.00531 -3.43874,-2.70066 -0.20382,-1.69535 1.00531,-3.234926 2.70066,-3.438741 0.19416,-0.02334 0.39009,-0.02821 0.58517,-0.01454"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-2"
+         style="fill:none;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="263.39301"
+       y="155.74242"
+       id="text3619-6-8-8"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1-1-2"
+         x="263.39301"
+         y="155.74242"
+         style="font-size:7.06273794px">cmd_vel</tspan></text>
+    <g
+       id="g3886"
+       transform="translate(0,16)"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <rect
+         y="159.14644"
+         x="175.95575"
+         height="11.270809"
+         width="85.623093"
+         id="rect3857"
+         style="fill:#ff7f2a;stroke:#000000;stroke-width:1.16800308;stroke-opacity:1" />
+      <text
+         id="text3619-6-8-8-0"
+         y="166.9993"
+         x="178.1301"
+         style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-size:7.06273794px"
+           y="166.9993"
+           x="178.1301"
+           id="tspan3621-1-1-2-7"
+           sodipodi:role="line">setDriveControlGains()</tspan></text>
+    </g>
+    <g
+       id="g4016"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <rect
+         y="92.047729"
+         x="304.74789"
+         height="100.20243"
+         width="76.153847"
+         id="rect3655-2"
+         style="fill:#ff7f2a;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <text
+         id="text3619-3-6"
+         y="103.06129"
+         x="308.00259"
+         style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-size:9px"
+           y="103.06129"
+           x="308.00259"
+           id="tspan3621-7-6"
+           sodipodi:role="line">teleop node</tspan></text>
+    </g>
+    <g
+       transform="matrix(-1,0,0,1,552.32075,60.977505)"
+       id="g3828-0"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         id="path3719-1"
+         d="m 247.77328,102.98565 10.5668,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         transform="translate(0,0.54251006)"
+         d="m 261.79627,102.44314 c 0,1.70755 -1.38425,3.0918 -3.0918,3.0918 -1.70756,0 -3.09181,-1.38425 -3.09181,-3.0918 0,-1.70756 1.38425,-3.091805 3.09181,-3.091805 1.70755,0 3.0918,1.384245 3.0918,3.091805 z"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-9"
+         style="fill:#000000;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <g
+       transform="translate(133.39042,4.010758)"
+       id="g3816-8"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         sodipodi:nodetypes="cc"
+         id="path3719-0-6"
+         d="m 248.10592,142.15799 7.6914,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:open="true"
+         sodipodi:end="4.7823519"
+         sodipodi:start="1.4511499"
+         transform="translate(0.33263706,39.716607)"
+         d="m 259.07351,105.51284 c -1.69535,0.20381 -3.23493,-1.00531 -3.43874,-2.70066 -0.20382,-1.69535 1.00531,-3.234926 2.70066,-3.438741 0.19416,-0.02334 0.39009,-0.02821 0.58517,-0.01454"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-2-3"
+         style="fill:none;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <g
+       transform="translate(132.85763,-0.27412092)"
+       id="g4016-0"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <rect
+         y="92.047729"
+         x="304.74789"
+         height="100.20243"
+         width="76.153847"
+         id="rect3655-2-4"
+         style="fill:#ff7f2a;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <text
+         id="text3619-3-6-9"
+         y="103.06129"
+         x="308.00259"
+         style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           style="font-size:9px"
+           y="103.06129"
+           x="308.00259"
+           id="tspan3621-7-6-5"
+           sodipodi:role="line">joy_node</tspan></text>
+    </g>
+    <g
+       transform="matrix(-1,0,0,1,685.99,21.476819)"
+       id="g3822-0"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         id="path3719-7-5"
+         d="m 247.95718,124.65747 10.5668,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         transform="translate(0.18390006,22.214332)"
+         d="m 261.79627,102.44314 c 0,1.70755 -1.38425,3.0918 -3.0918,3.0918 -1.70756,0 -3.09181,-1.38425 -3.09181,-3.0918 0,-1.70756 1.38425,-3.091805 3.09181,-3.091805 1.70755,0 3.0918,1.384245 3.0918,3.091805 z"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-0-2"
+         style="fill:#000000;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="423.45074"
+       y="138.93735"
+       id="text3619-6-8-4"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1-1-9"
+         x="423.45074"
+         y="138.93735"
+         style="font-size:7.06273794px">joy</tspan></text>
+    <path
+       id="path5449"
+       d="m 288.11509,163.8363 -27.88211,0"
+       style="fill:none;stroke:#fe0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2LendN)"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <path
+       id="path5449-7"
+       d="m 421.22646,145.84578 -27.88211,0"
+       style="fill:none;stroke:#fe0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2LendN)"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734" />
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="384.14804"
+       y="138.56924"
+       id="text3619-6-8-4-4"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1-1-9-5"
+         x="384.14804"
+         y="138.56924"
+         style="font-size:7.06273794px">joy</tspan></text>
+    <g
+       transform="translate(-0.109485,19.024559)"
+       id="g3822-6"
+       inkscape:export-filename="/home/rainer/dev/drh-robotics-ros/RobotConstruction/text3619-6-8-0.png"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734">
+      <path
+         id="path3719-7-7"
+         d="m 247.95718,124.65747 10.5668,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         transform="translate(0.18390006,22.214332)"
+         d="m 261.79627,102.44314 c 0,1.70755 -1.38425,3.0918 -3.0918,3.0918 -1.70756,0 -3.09181,-1.38425 -3.09181,-3.0918 0,-1.70756 1.38425,-3.091805 3.09181,-3.091805 1.70755,0 3.0918,1.384245 3.0918,3.091805 z"
+         sodipodi:ry="3.0918031"
+         sodipodi:rx="3.0918031"
+         sodipodi:cy="102.44314"
+         sodipodi:cx="258.70447"
+         id="path3721-0-27"
+         style="fill:#000000;stroke:#000000;stroke-opacity:1"
+         sodipodi:type="arc" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:35.31369019px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="253.2886"
+       y="138.48506"
+       id="text3619-6-8-0"
+       inkscape:export-xdpi="300.27734"
+       inkscape:export-ydpi="300.27734"><tspan
+         sodipodi:role="line"
+         id="tspan3621-1-1-1"
+         x="253.2886"
+         y="138.48506"
+         style="font-size:7.06273794px">tf</tspan></text>
+  </g>
+</svg>
