@@ -7,6 +7,14 @@ rosrun ardros arduino.py
 roslaunch ardros teleop.launch
 roslaunch ardros teleopRobot.launch
 
+For teleop install qtsixa from http://qtsixa.sourceforge.net/:
+sudo add-apt-repository ppa:falk-t-j/qtsixa
+sudo apt-get update
+sudo apt-get install qtsixa
+
+Then: http://ubuntuforums.org/showpost.php?p=10360389&postcount=789
+
+
 rosrun ardros DeadReckoning.py
 
 
@@ -66,10 +74,16 @@ rxloggerlevel &
 rxconsole &
 
 
+Kinect Only:
+
+Part 1:
+roslaunch openni_camera openni_node.launch
+
+Part 2:
+roscd ardros
+rosrun rviz rviz -d ./rviz/kinect.vcg
 
 
-
-rainer@rainer-laptop:~/ni/ni/openni_camera/launch$ roslaunch openni_camera openni_kinect.launch
 
 
 SLAM:
@@ -84,9 +98,8 @@ rosrun rviz rviz -d ./rviz/slam.vcg
 Part 3:
 After driving around for a while, save the generated map:
 
-roscd ardros
-rosrun map_server map_saver -f ./maps/map
-
+roscd ardros/maps
+rosrun map_server map_saver -f ./map
 
 
 
