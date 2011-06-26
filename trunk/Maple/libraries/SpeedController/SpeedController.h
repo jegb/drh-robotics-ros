@@ -41,23 +41,6 @@ private:
 		}
 	}
 	
-	void Reset()
-	{
-		//_LastLeftError = 0.0;
-		//_LastRightError = 0.0;
-		_LeftErrorIntegral = 0.0;
-		_RightErrorIntegral = 0.0;
-		_TurnErrorIntegral = 0.0;
-		LeftError = 0.0;
-		RightError = 0.0;	
-		TurnError = 0.0;	
-		NormalizedLeftCV = 0.0;
-		NormalizedRightCV = 0.0;
-
-		CommandedVelocity = 0.0;
-		CommandedAngularVelocity = 0.0;
-	}
-	
 public:
 	bool IsInitialized;
 
@@ -172,6 +155,23 @@ public:
 		
 		//_LastLeftError = LeftError;
 		//_LastRightError = RightError;
+	}
+	
+	void Reset()
+	{
+		//_LastLeftError = 0.0;
+		//_LastRightError = 0.0;
+		_LeftErrorIntegral = 0.0;
+		_RightErrorIntegral = 0.0;
+		_TurnErrorIntegral = 0.0;
+		LeftError = 0.0;
+		RightError = 0.0;	
+		TurnError = 0.0;	
+		NormalizedLeftCV = 0.0;
+		NormalizedRightCV = 0.0;
+
+		CommandedVelocity = 0.0;
+		CommandedAngularVelocity = 0.0;
 	}
 };
 
