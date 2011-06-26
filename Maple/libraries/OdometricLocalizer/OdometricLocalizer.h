@@ -24,10 +24,7 @@ private:
 	double _DistancePerCount;
 	double _RadiansPerCount;
 
-	long _LeftEncoderCounts;
 	long _PreviousLeftEncoderCounts;
-
-	long _RightEncoderCounts;
 	long _PreviousRightEncoderCounts;
 
 public:
@@ -82,6 +79,21 @@ public:
 
 		_PreviousLeftEncoderCounts = leftEncoderCounts;
 		_PreviousRightEncoderCounts = rightEncoderCounts;
+	}
+
+	void Reset()
+	{
+		X = 0.0;  // x coord in global frame
+		Y = 0.0;  // y coord in global frame
+		Heading = 0.0;  // heading (radians) in the global frame. The value lies in (-PI, PI]
+	
+		VLeft = 0.0;   // left motor speed
+		VRight = 0,0;  // right motor speed
+		V = 0.0;  // forward speed
+		Omega = 0.0;  // angular speed (radians per sec)
+
+		_PreviousLeftEncoderCounts = 0;
+		_PreviousRightEncoderCounts = 0;
 	}
 };
 
