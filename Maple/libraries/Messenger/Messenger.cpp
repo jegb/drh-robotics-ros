@@ -62,6 +62,18 @@ long Messenger::readLong() {
 
 }
 
+
+float Messenger::readFloat() {
+
+    if (next()) {
+    	dumped = 1;
+    	return atoff(current);
+     }
+  return 0.0;
+
+}
+
+
 char Messenger::readChar() {
 
   if (next()) {
@@ -133,6 +145,7 @@ uint8_t Messenger::process(int serialByte) {
       case 10: // LF
         break;
       case 13: // CR
+      case 59: // ;
         buffer[bufferIndex]=0;
         reset();
         messageState = 1;

@@ -1,7 +1,7 @@
 
 #ifndef Messenger_h
 #define Messenger_h
-#define MESSENGERBUFFERSIZE 64
+#define MESSENGERBUFFERSIZE 200
 
 #include <inttypes.h>
 
@@ -19,17 +19,18 @@ public:
   Messenger(char separator);
   int readInt();
   long readLong(); // Added based on a suggestion by G. Paolo Sani
+  float readFloat();
   char readChar();
   void copyString(char *string, uint8_t size);
   uint8_t checkString(char *string);
   uint8_t process(int serialByte);
   uint8_t available();
   void attach(messengerCallbackFunction newFunction);
+  void reset();
   
 private:
   void init(char separator);
   uint8_t next();
-  void reset();
   
   uint8_t messageState;
   
