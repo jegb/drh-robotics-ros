@@ -172,6 +172,7 @@ public:
 
 		CommandedVelocity = 0.0;
 		CommandedAngularVelocity = 0.0;
+		IsInitialized = false;
 	}
 };
 

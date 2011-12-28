@@ -36,6 +36,11 @@ class RobotParams
 
 			IsInitialized = true;
 		}
+
+		void Reset()
+		{
+			IsInitialized = false;
+		}
 };
 
 #endif
