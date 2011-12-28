@@ -6,11 +6,11 @@
 #include <BatteryMonitor.h>
 #include <Messenger.h>
 
-#define c_UpdateIntervalForInit 200  // update interval during the initialization phase; in millisecs
+#define c_UpdateIntervalForInit 100  // update interval during the initialization phase; in millisecs
 #define c_UpdateIntervalNormal 20  // update interval for normal operation after the initialization phase; in millisecs
 
-const int c_LeftServoOutPin = 9;    // Output pin that the servo is attached to
-const int c_RightServoOutPin = 8;    // Output pin that the servo is attached to
+const int c_LeftServoOutPin = 8;    // Output pin that the servo is attached to
+const int c_RightServoOutPin = 9;    // Output pin that the servo is attached to
 
 Servo _LeftServo;
 Servo _RightServo;
@@ -32,6 +32,7 @@ volatile long _LeftEncoderTicks = 0;
 // Right encoder
 #define c_RightEncoderPinA 35
 #define c_RightEncoderPinB 36
+//#define RightEncoderIsReversed
 volatile bool _RightEncoderBSet;
 volatile long _RightEncoderTicks = 0;
 
@@ -98,6 +99,12 @@ void loop()
     {
       _UpdateInterval = c_UpdateIntervalForInit; // We use a slow update interval during the initialization phase 
       RequestInitialization();
+      if (_IsInitialized)
+      {
+        // intialization is complete
+        SerialUSB.print("initialized");
+        SerialUSB.print("\n");
+      }
     }
   }
 }
@@ -178,8 +185,8 @@ void IssueCommands()
 {
   float normalizedRightMotorCV, normalizedLeftMotorCV;
   
-  normalizedLeftMotorCV = _SpeedController.NormalizedRightCV;
-  normalizedRightMotorCV = _SpeedController.NormalizedLeftCV;
+  normalizedLeftMotorCV = _SpeedController.NormalizedLeftCV;
+  normalizedRightMotorCV = _SpeedController.NormalizedRightCV;
   
   SerialUSB.print("Speed: ");
   SerialUSB.print(_SpeedController.CommandedVelocity);
@@ -199,8 +206,8 @@ void IssueCommands()
   /*
   */
   
-  float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
   float leftServoValue = mapFloat(normalizedLeftMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
+  float rightServoValue = mapFloat(normalizedRightMotorCV, -1, 1, 90.0 - c_MaxMotorCV, 90.0 + c_MaxMotorCV);     // scale it to use it with the servo (value between 0 and 180) 
  
   SerialUSB.print("Servos: ");
   SerialUSB.print(leftServoValue);
@@ -222,6 +229,7 @@ void ReadSerial()
   while (SerialUSB.available())
   {
     _Messenger.process(SerialUSB.read());
+    //delayMicroseconds(100);
   }
 }
 
@@ -280,7 +288,15 @@ void ClearOutMessenger()
 
 void SetSpeed()
 {
+  if (!_Messenger.available())
+  {
+    return;
+  }
   float commandedVelocity = _Messenger.readFloat();
+  if (!_Messenger.available())
+  {
+    return;
+  }
   float commandedAngularVelocity = _Messenger.readFloat();
   _SpeedController.CommandVelocity(commandedVelocity, commandedAngularVelocity); 
 }
@@ -291,10 +307,13 @@ void Reset()
   _LeftEncoderTicks = 0;
   _RightEncoderTicks = 0;
 
+  _RobotParams.Reset();
   _OdometricLocalizer.Reset();
   _SpeedController.Reset();
+  _BatteryMonitor.Reset();
   
-  SerialUSB.println("reset_done");
+  SerialUSB.print("reset_done");
+  SerialUSB.print("\n");
 }
 
 // set robot params wheel diameter [m], trackwidth [m], ticks per revolution

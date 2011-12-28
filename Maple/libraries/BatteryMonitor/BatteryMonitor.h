@@ -59,6 +59,11 @@ public:
 			VoltageIsTooLow = true;
 		}
 	}
+
+	void Reset()
+	{
+		IsInitialized = false;
+	}
 };
 
 #endif
