@@ -52,30 +52,49 @@ class Arduino(object):
 	Helper class for communicating with an Arduino board over serial port
 	'''
 
+	CONTROLLER_RESET_REQUIRED = 0;
+	CONTROLLER_INITIALIZING = 1;
+	CONTROLLER_IS_READY = 2;
+
 	def _HandleReceivedLine(self,  line):
 		self._Counter = self._Counter + 1
 		#rospy.logdebug(str(self._Counter) + " " + line)
 		#if (self._Counter % 50 == 0):
-		self._SerialPublisher.publish(String(str(self._Counter) + " " + line))
+		self._SerialPublisher.publish(String(str(self._Counter) + ", in:  " + line))
+
 		if (len(line) > 0):
 			lineParts = line.split('\t')
+			if (self._State == Arduino.CONTROLLER_RESET_REQUIRED):
+				if (lineParts[0] == "reset_done"):
+					self._State = Arduino.CONTROLLER_INITIALIZING
+					return
+				else:
+					self._WriteSerial('reset\r')
+					return
+
+			if (self._State == Arduino.CONTROLLER_INITIALIZING):
+				if (lineParts[0] == "initialized"):
+					self._State = Arduino.CONTROLLER_IS_READY
+					return
+				elif (lineParts[0] == "InitializeDriveGeometry"):
+					# controller requesting initialization
+					self._InitializeDriveGeometry()
+					return
+				elif (lineParts[0] == "InitializeSpeedController"):
+					# controller requesting initialization
+					self._InitializeSpeedController()
+					return
+				elif (lineParts[0] == "InitializeBatteryMonitor"):
+					# controller requesting initialization
+					self._InitializeBatteryMonitor()
+					return
+					
+
 			if (lineParts[0] == 'o'):
 				self._BroadcastOdometryInfo(lineParts)
 				return
 			if (lineParts[0] == 'b'):
 				self._BroadcastBatteryInfo(lineParts)
-				return
-			if (lineParts[0] == "InitializeDriveGeometry"):
-				# controller requesting initialization
-				self._InitializeDriveGeometry()
-				return
-			if (lineParts[0] == "InitializeSpeedController"):
-				# controller requesting initialization
-				self._InitializeSpeedController()
-				return
-			if (lineParts[0] == "InitializeBatteryMonitor"):
-				# controller requesting initialization
-				self._InitializeBatteryMonitor()
 				return
 
 	def _BroadcastOdometryInfo(self, lineParts):
@@ -159,6 +178,9 @@ class Arduino(object):
 		except:
 			rospy.logwarn("Unexpected error:" + str(sys.exc_info()[0]))
 
+	def _WriteSerial(self, message):
+		self._SerialPublisher.publish(String(str(self._Counter) + ", out: " + message))
+		self._SerialDataGateway.Write(message)
 
 	def __init__(self, port="/dev/ttyUSB0", baudrate=115200):
 		'''
@@ -189,6 +211,8 @@ class Arduino(object):
 		
 		self._SetDriveGainsService = rospy.Service('setDriveControlGains', SetDriveControlGains, self._HandleSetDriveGains)
 
+		self._State = Arduino.CONTROLLER_RESET_REQUIRED
+
 		self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
 
 	def Start(self):
@@ -203,23 +227,23 @@ class Arduino(object):
 		""" Handle movement requests. """
 		v = twistCommand.linear.x        # m/s
 		omega = twistCommand.angular.z      # rad/s
-		rospy.loginfo("Handling twist command: " + str(v) + "," + str(omega))
+		rospy.logwarn("Handling twist command: " + str(v) + "," + str(omega))
 
-		message = 's %d %d %d %d \r' % self._GetBaseAndExponents((v, omega))
+		message = 's %.2f %.2f\r' % (v, omega)
 		rospy.logdebug("Sending speed command message: " + message)
-		self._SerialDataGateway.Write(message)
+		self._WriteSerial(message)
 
 	def _InitializeDriveGeometry(self):
 		wheelDiameter = rospy.get_param("~driveGeometry/wheelDiameter", "0")
 		trackWidth = rospy.get_param("~driveGeometry/trackWidth", "0")
 		countsPerRevolution = rospy.get_param("~driveGeometry/countsPerRevolution", "0")
 
-		wheelDiameterParts = self._GetBaseAndExponent(wheelDiameter)
-		trackWidthParts = self._GetBaseAndExponent(trackWidth)
+		#wheelDiameterParts = self._GetBaseAndExponent(wheelDiameter)
+		#trackWidthParts = self._GetBaseAndExponent(trackWidth)
 
-		message = 'DriveGeometry %d %d %d %d %d\r' % (wheelDiameterParts[0], wheelDiameterParts[1], trackWidthParts[0], trackWidthParts[1], countsPerRevolution)
+		message = 'dg %f %f %d\r' % (wheelDiameter, trackWidth, countsPerRevolution)
 		rospy.logdebug("Sending drive geometry params message: " + message)
-		self._SerialDataGateway.Write(message)
+		self._WriteSerial(message)
 
 	def _InitializeSpeedController(self):
 		velocityPParam = rospy.get_param("~speedController/velocityPParam", "0")
@@ -228,9 +252,15 @@ class Arduino(object):
 		turnIParam = rospy.get_param("~speedController/turnIParam", "0")
 		commandTimeout = self._GetCommandTimeoutForSpeedController()
 
-		speedControllerParams = (velocityPParam, velocityIParam, turnPParam, turnIParam, commandTimeout)
+		message = 'sc %.2f %.2f %.2f %.2f %.2f\r' % (velocityPParam, velocityIParam, turnPParam, turnIParam, commandTimeout)
+		#message = 'sc %f %f %f\r' % (velocityPParam, velocityIParam, turnPParam)
+		rospy.logdebug("Sending differential drive gains message: " + message)
+		self._WriteSerial(message)
+
+
+		#speedControllerParams = (velocityPParam, velocityIParam, turnPParam, turnIParam, commandTimeout)
 		#rospy.loginfo(str(speedControllerParams))
-		self._WriteSpeedControllerParams(speedControllerParams)
+		#self._WriteSpeedControllerParams(speedControllerParams)
 	
 	def _GetCommandTimeoutForSpeedController(self):
 		"""
@@ -254,16 +284,17 @@ class Arduino(object):
 		""" Writes the speed controller parameters (drive gains (PID), and command timeout) to the Arduino controller. """
 		rospy.logdebug("Handling '_WriteSpeedControllerParams'; received parameters " + str(speedControllerParams))
 		
-		message = 'SpeedControllerParams %d %d %d %d %d %d %d %d %d %d\r' % self._GetBaseAndExponents(speedControllerParams)
+		message = 'SpeedCo %d %d %d %d %d %d %d %d %d %d\r' % self._GetBaseAndExponents(speedControllerParams)
+		message = 'SpeedCo 763 -4 3700 -4 9750\r'
 		rospy.logdebug("Sending differential drive gains message: " + message)
-		self._SerialDataGateway.Write(message)
+		self._WriteSerial(message)
 
 	def _InitializeBatteryMonitor(self):
 		rospy.logdebug("Initializing battery monitor. voltageTooLowLimit = " + str(self._VoltageLowLowlimit))
 
-		message = 'BatteryMonitorParams %d %d\r' % self._GetBaseAndExponent(self._VoltageLowLowlimit)
+		message = 'bm %f\r' % self._VoltageLowLowlimit
 		rospy.logdebug("Sending battery monitor params message: " + message)
-		self._SerialDataGateway.Write(message)
+		self._WriteSerial(message)
 
 	def _GetBaseAndExponent(self, floatValue, resolution=4):
 		'''

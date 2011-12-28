@@ -15,6 +15,7 @@ sudo apt-get install qtsixa
 Then: http://ubuntuforums.org/showpost.php?p=10360389&postcount=789
 
 
+roscd ardros
 rosrun ardros DeadReckoning.py
 
 
@@ -40,6 +41,7 @@ rxgraph
 Manually publish speed command
 In a new terminal:
 rostopic pub -1 /cmd_vel geometry_msgs/Twist -- '{ linear: { x: 0.02, y: 0, z: 0 }, angular: { x: 0, y: 0, z: 0}  }'
+rostopic pub -r 10 /cmd_vel geometry_msgs/Twist -- '{ linear: { x: 0.02, y: 0, z: 0 }, angular: { x: 0, y: 0, z: 0}  }'
 
 -1 means: just one message is published
 
