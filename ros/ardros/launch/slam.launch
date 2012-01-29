@@ -3,11 +3,11 @@
 
 	<node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
 		<!--remap from="scan" to="base_scan"/-->
-		<!--param name="odom_frame" value="odom"/-->
-		<param name="map_update_interval" value="2.0"/>
-		<param name="maxUrange" value="6.0"/>
+		<param name="odom_frame" value="odom"/>
+		<param name="map_update_interval" value="30.0"/>
+		<param name="maxUrange" value="16.0"/>
 		<param name="sigma" value="0.05"/>
-		<param name="kernelSize" value="1"/>
+		<param name="kernelSize" value="1.0"/>
 		<param name="lstep" value="0.05"/>
 		<param name="astep" value="0.05"/>
 		<param name="iterations" value="5"/>
@@ -18,11 +18,11 @@
 		<param name="srt" value="0.02"/>
 		<param name="str" value="0.01"/>
 		<param name="stt" value="0.02"/>
-		<param name="linearUpdate" value="0.25"/>     <!-- param name="linearUpdate" value="0.5"/-->
-		<param name="angularUpdate" value="0.262"/>   <!--param name="angularUpdate" value="0.436"/-->
+		<param name="linearUpdate" value="0.5"/>     <!-- param name="linearUpdate" value="0.5"/-->
+		<param name="angularUpdate" value="0.436"/>   <!--param name="angularUpdate" value="0.436"/-->
 		<param name="temporalUpdate" value="-1.0"/>
 		<param name="resampleThreshold" value="0.5"/>
-		<param name="particles" value="300"/>
+		<param name="particles" value="80"/>
 		<param name="xmin" value="-50.0"/>
 		<param name="ymin" value="-50.0"/>
 		<param name="xmax" value="50.0"/>
