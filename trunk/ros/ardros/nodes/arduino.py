@@ -104,12 +104,12 @@ class Arduino(object):
 			pass
 		
 		try:
-			x = float(lineParts[1])
-			y = float(lineParts[2])
-			theta = float(lineParts[3])
+			x = int(lineParts[1]) / 1000.0
+			y = int(lineParts[2]) / 1000.0
+			theta = int(lineParts[3]) / 1000.0
 			
-			vx = float(lineParts[4])
-			omega = float(lineParts[5])
+			vx = int(lineParts[4]) / 1000.0
+			omega = int(lineParts[5]) / 1000.0
 		
 			#quaternion = tf.transformations.quaternion_from_euler(0, 0, theta)
 			quaternion = Quaternion()

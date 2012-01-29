@@ -36,9 +36,9 @@ Grid.Plane=0
 Grid.Plane\ Cell\ Count=100
 Grid.Reference\ Frame=/odom
 Inflated\ Obstacles.Alpha=1
-Inflated\ Obstacles.ColorR=0
-Inflated\ Obstacles.ColorG=0.129412
-Inflated\ Obstacles.ColorB=1
+Inflated\ Obstacles.ColorR=0.752941
+Inflated\ Obstacles.ColorG=0.780392
+Inflated\ Obstacles.ColorB=0.984314
 Inflated\ Obstacles.Enabled=1
 Inflated\ Obstacles.Topic=/move_base/local_costmap/inflated_obstacles
 Local\ Plan.Alpha=1
@@ -65,9 +65,9 @@ Planner\ Plan.ColorB=0.862745
 Planner\ Plan.Enabled=1
 Planner\ Plan.Topic=/move_base/NavfnROS/plan
 Robot\ Footprint.Alpha=1
-Robot\ Footprint.ColorR=1
-Robot\ Footprint.ColorG=0.631373
-Robot\ Footprint.ColorB=0.0117647
+Robot\ Footprint.ColorR=0.239216
+Robot\ Footprint.ColorG=0.0627451
+Robot\ Footprint.ColorB=0.984314
 Robot\ Footprint.Enabled=1
 Robot\ Footprint.Topic=/move_base/local_costmap/robot_footprint
 Static\ Map.Alpha=0.7
@@ -77,8 +77,8 @@ Static\ Map.Topic=/map
 Tool\ 2D\ Nav\ GoalTopic=move_base_simple/goal
 Tool\ 2D\ Pose\ EstimateTopic=initialpose
 Camera\ Type=rviz::FixedOrientationOrthoViewController
-Camera\ Config=47.3105 -50.0907 16.1827 -50.6258 -0.707051 0.00883918 0.00883843 0.707052
-Property\ Grid\ State=selection=Global Plan.Enabled;expanded=.Global Options;scrollpos=0,0;splitterpos=150,301;ispageselected=1
+Camera\ Config=68.1152 -2.14852 16.1826 0.0134874 -0.707051 0.00883918 0.00883843 0.707052
+Property\ Grid\ State=selection=Inflated Obstacles.Enabled.Inflated Obstacles.Color;expanded=.Global Options,Obstacles.Enabled,Inflated Obstacles.Enabled,Robot Footprint.Enabled,Global Plan.Enabled,Planner Plan.Enabled,Local Plan.Enabled,Current Goal.Enabled;scrollpos=0,4;splitterpos=186,373;ispageselected=1
 [Display0]
 Name=Grid
 Package=rviz
@@ -88,31 +88,31 @@ Name=Static Map
 Package=rviz
 ClassName=rviz::MapDisplay
 [Display2]
-Name=Robot Footprint
-Package=rviz
-ClassName=rviz::PolygonDisplay
-[Display3]
 Name=Particle Cloud
 Package=rviz
 ClassName=rviz::PoseArrayDisplay
-[Display4]
+[Display3]
 Name=Obstacles
 Package=rviz
 ClassName=rviz::GridCellsDisplay
-[Display5]
+[Display4]
 Name=Inflated Obstacles
 Package=rviz
 ClassName=rviz::GridCellsDisplay
+[Display5]
+Name=Robot Footprint
+Package=rviz
+ClassName=rviz::PolygonDisplay
 [Display6]
 Name=Global Plan
 Package=rviz
 ClassName=rviz::PathDisplay
 [Display7]
-Name=Local Plan
+Name=Planner Plan
 Package=rviz
 ClassName=rviz::PathDisplay
 [Display8]
-Name=Planner Plan
+Name=Local Plan
 Package=rviz
 ClassName=rviz::PathDisplay
 [Display9]
