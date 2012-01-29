@@ -120,15 +120,15 @@ void DoWork()
     
   SerialUSB.print("o"); // o indicates odometry message
   SerialUSB.print("\t");
-  SerialUSB.print(_OdometricLocalizer.X);
+  SerialUSB.print(int(_OdometricLocalizer.X * 1000));
   SerialUSB.print("\t");
-  SerialUSB.print(_OdometricLocalizer.Y);
+  SerialUSB.print(int(_OdometricLocalizer.Y * 1000));
   SerialUSB.print("\t");
-  SerialUSB.print(_OdometricLocalizer.Heading);
+  SerialUSB.print(int(_OdometricLocalizer.Heading * 1000));
   SerialUSB.print("\t");
-  SerialUSB.print(_OdometricLocalizer.V);
+  SerialUSB.print(int(_OdometricLocalizer.V * 1000));
   SerialUSB.print("\t");
-  SerialUSB.print(_OdometricLocalizer.Omega);
+  SerialUSB.print(int(_OdometricLocalizer.Omega * 1000));
 
 /*
   SerialUSB.print("\t");
