@@ -48,8 +48,193 @@ from actionlib_msgs.msg import GoalStatus
 from geometry_msgs.msg import Quaternion
 
 
+class RecordedGoalsParser(object):
+	'''
+	Helper class for extracting goals from a text file that contains the output of the
+	ros topic /move_base/goal:
+	
+	rostopic echo /move_base/goal > ./goals.txt
+	
+	Content looks like this:
+	
+	header: 
+	  seq: 5
+	  stamp: 
+		secs: 1327888889
+		nsecs: 905062316
+	  frame_id: ''
+	goal_id: 
+	  stamp: 
+		secs: 0
+		nsecs: 0
+	  id: ''
+	goal: 
+	  target_pose: 
+		header: 
+		  seq: 5
+		  stamp: 
+			secs: 1327888889
+			nsecs: 904623411
+		  frame_id: /map
+		pose: 
+		  position: 
+			x: 0.500366389751
+			y: 3.55791568756
+			z: 0.0
+		  orientation: 
+			x: 0.0
+			y: 0.0
+			z: -0.724127701373
+			w: 0.689665913398
+	---
+	header: 
+	  seq: 6
+	  stamp: 
+		secs: 1327888899
+		nsecs: 302587125
+	  frame_id: ''
+	goal_id: 
+	  stamp: 
+		secs: 0
+		nsecs: 0
+	  id: ''
+	goal: 
+	  target_pose: 
+		header: 
+		  seq: 6
+		  stamp: 
+			secs: 1327888899
+			nsecs: 302292358
+		  frame_id: /map
+		pose: 
+		  position: 
+			x: 0.353558450937
+			y: -0.0242511983961
+			z: 0.0
+		  orientation: 
+			x: 0.0
+			y: 0.0
+			z: 0.700985642079
+			w: 0.713175384881
+	---
 
-class GoalsFileParser(object):
+
+	'''
+
+	def Parse(self, filePath):
+		'''
+		Parses the specified file and returns the extracted frame id and the array of goal poses:
+		(frame_id, [(x,y,theta)])
+		'''
+		
+		self._GoalFrameId = '/map'
+		self._GoalsFilePath = filePath
+		file = open(filePath, 'r')
+		goals = []
+		
+		while True:
+			goal = self._ReadNextGoalSection(file)
+			if goal is None:
+				break
+			
+			goals.append(goal)
+			# the next goal section starts after the line containing '---' which acts as a separater
+			file.readline()
+			
+		return (self._GoalFrameId, goals)
+
+	def _ReadNextGoalSection(self, file):
+		'''
+		Reads a section of the file that needs to be structured like this:
+		
+		header: 
+		  seq: 5
+		  stamp: 
+			secs: 1327888889
+			nsecs: 905062316
+		  frame_id: ''
+		goal_id: 
+		  stamp: 
+			secs: 0
+			nsecs: 0
+		  id: ''
+		goal: 
+		  target_pose: 
+			header: 
+			  seq: 5
+			  stamp: 
+				secs: 1327888889
+				nsecs: 904623411
+			  frame_id: /map
+			pose: 
+			  position: 
+				x: 0.500366389751
+				y: 3.55791568756
+				z: 0.0
+			  orientation: 
+				x: 0.0
+				y: 0.0
+				z: -0.724127701373
+				w: 0.689665913398
+
+		'''
+		
+		# skip the first 18 lines
+		for i in range(18):
+			line = file.readline()
+			if len(line) == 0:
+				return None
+		
+		# next line contains the frame_id:
+		line = file.readline()
+		#print(line)
+		lineParts = line.split(':')
+		self._GoalFrameId = lineParts[1].strip()
+		#print(self._GoalFrameId)
+		
+		file.readline()
+		file.readline()
+
+		# next line contains the x position
+		line = file.readline()
+		#print(line)
+		x = self._ExtractValue('x', line)
+
+		line = file.readline()
+		y = self._ExtractValue('y', line)
+		#print(line)
+		
+		file.readline() # z position
+		file.readline() # orientation
+		file.readline() # x orientation
+		file.readline() # y orientation
+		
+		line = file.readline() # z orientation
+		#print(line)
+		theta = self._ExtractValue('z', line)
+
+		file.readline() # w orientation
+
+		goal = (x, y, theta)
+		return goal
+	
+	def _ExtractValue(self, variableName, linePart):
+		'''
+		Takes as input text like this:
+		     x: 0.500366389751
+		
+		Checks that the specified variableName matches the name of the variable in the string.
+		then extracts the float value after the ':'
+		'''
+
+		nameValueParts = linePart.split(':')
+		if nameValueParts[0].strip() != variableName:
+			raise NameError('Expected variable name ' + variableName + ' but found ' + nameValueParts[0].strip())
+
+		return float(nameValueParts[1].strip())
+
+
+class SimpleGoalsFileParser(object):
 	'''
 	Helper class for extracting goals from a text file. Here is a sample file content:
 
@@ -179,7 +364,7 @@ if __name__ == '__main__':
 		# we accept the path to the goals text file as a command line argument
 		goalsFilePath = sys.argv[1]
 
-	goalsFileParser = GoalsFileParser()
+	goalsFileParser = SimpleGoalsFileParser()
 	goals = goalsFileParser.Parse(goalsFilePath)
 	print(goals)
 
