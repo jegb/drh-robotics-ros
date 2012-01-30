@@ -12,5 +12,5 @@ driveGeometry: {wheelDiameter: 0.0763, trackWidth: 0.373, countsPerRevolution: 9
 #speedController: {velocityPParam: 0.1, velocityIParam: 0.1, turnPParam: 0.4, turnIParam: 0.5, commandTimeout: 1.0} 
 #speedController: {velocityPParam: 0.01, velocityIParam: 0.01, turnPParam: 0.04, turnIParam: 0.05, commandTimeout: 1.0} 
 #speedController: {velocityPParam: 0.03, velocityIParam: 0.03, turnPParam: 0.04, turnIParam: 0.03, commandTimeout: 1.0} 
-speedController: {velocityPParam: 0.06, velocityIParam: 0.06, turnPParam: 0.04, turnIParam: 0.05, commandTimeout: 1.0} 
+speedController: {velocityPParam: 0.02, velocityIParam: 0.06, turnPParam: 0.04, turnIParam: 0.05, commandTimeout: 1.0} 
 

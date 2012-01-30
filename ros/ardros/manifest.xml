@@ -15,6 +15,7 @@
   <depend package="nav_msgs"/>
   <depend package="tf"/>
   <depend package="joy"/>
-
+  <depend package="move_base_msgs"/>
+  <depend package="actionlib"/>
 </package>
 
