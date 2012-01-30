@@ -136,3 +136,9 @@ Originally was 2
 Listen to goals:
 rostopic echo /move_base/goal
 save to file: rostopic echo /move_base/goal > /home/rainer/dev/drh-robotics-ros/ros/ardros/goals.txt
+
+
+Navigate through a list of goals
+roscd ardros
+rosrun ardros GoalsSequencer.py
+
