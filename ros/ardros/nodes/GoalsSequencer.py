@@ -238,36 +238,56 @@ class SimpleGoalsFileParser(object):
 	'''
 	Helper class for extracting goals from a text file. Here is a sample file content:
 
+  frame_id: /map
 	// End of first hall way leg
-	x = 0.705669820309, y = 3.92879199982, theta = -0.712161728691
-	x = 2.3, y = 0.4, theta = 1.1
+	x: 0.705669820309, y: 3.92879199982, theta: -0.712161728691
+	x: 2.3, y: 0.4, theta: 1.1
 
 	'''
 
 	def Parse(self, filePath):
 		'''
-		Parses the specified file and returns the found goal poses as an array of
-		(x,y,theta) tuples.
+		Parses the specified file and returns the found frame id and goal poses as a tuple of the form
+		(frameId, [(x,y,theta)])
 		'''
 		self._GoalsFilePath = filePath
 		file = open(filePath, 'r')
+		frameId = None
 		goals = []
 		for line in file:
-			goal = self._ParseLine(line)
-			if goal is not None:
+			trimmedLine = line.strip()
+			if _IsCommentOrEmpty(trimmedLine):
+				continue
+			
+			if frameId is None:
+				frameId = self._ParseFrameId(trimmedLine)
+			else
+				goal = self._ParseGoalLine(trimmedLine)
 				goals.append(goal)
-		
-		return goals
 
-	def _ParseLine(self, line):
-		trimmedLine = line.strip()
+		return (frameId, goals)
+
+	def _IsCommentOrEmpty(self, trimmedLine):
 		if trimmedLine.startswith('//'):
 			# we are dealing with a comment line
-			return
+			return True
 		if len(trimmedLine) == 0:
 			# we are dealing with an empty line
-			return
-		
+			return True
+		return False
+
+	def _ParseFrameId(self, trimmedLine):
+		'''
+		Takes as input text like this:
+		frame_id: /map
+		'''
+
+		nameValueParts = linePart.split(':')
+		if nameValueParts[0].strip() != 'frame_id':
+			raise NameError('Expected variable name frame_id but found ' + nameValueParts[0].strip())
+		return nameValueParts[1].strip()
+    
+	def _ParseGoalLine(self, trimmedLine):
 		#print(trimmedLine)
 		lineParts = trimmedLine.split(',')
 		x = self._ExtractValue('x', lineParts[0])
@@ -280,14 +300,14 @@ class SimpleGoalsFileParser(object):
 	def _ExtractValue(self, variableName, linePart):
 		'''
 		Takes as input text like this:
-		x = 0.73444
+		x: 0.73444
 		
 		Checks that the specified variableName matches the name of the variable in the string.
 		then extracts the float value of the '=' sign
 		
 		'''
 
-		nameValueParts = linePart.split('=')
+		nameValueParts = linePart.split(':')
 		if nameValueParts[0].strip() != variableName:
 			raise NameError('Expected variable name ' + variableName + ' but found ' + nameValueParts[0].strip())
 
@@ -365,10 +385,10 @@ if __name__ == '__main__':
 		goalsFilePath = sys.argv[1]
 
 	goalsFileParser = SimpleGoalsFileParser()
-	goals = goalsFileParser.Parse(goalsFilePath)
+	(frameId, goals) = goalsFileParser.Parse(goalsFilePath)
 	print(goals)
 
-	goalsSequencer = GoalsSequencer(goalFrameId = '/map')
+	goalsSequencer = GoalsSequencer(goalFrameId = frameId)
 	goalsSequencer.NavigateToGoals(goals)
 	
 	
