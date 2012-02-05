@@ -140,5 +140,8 @@ save to file: rostopic echo /move_base/goal > /home/rainer/dev/drh-robotics-ros/
 
 Navigate through a list of goals
 roscd ardros
-rosrun ardros GoalsSequencer.py
+rosrun ardros GoalsSequencer.py ./maps/simpleGoals.txt
+or
+rosrun ardros GoalsSequencer.py ./maps/recordedGoals.txt
+
 
