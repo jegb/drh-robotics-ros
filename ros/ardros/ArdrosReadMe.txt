@@ -16,7 +16,13 @@ Then: http://ubuntuforums.org/showpost.php?p=10360389&postcount=789
 
 
 roscd ardros
-rosrun ardros DeadReckoning.py
+rosrun ardros DeadReckoning.py ./RecordedVelocity.txt
+
+roscd ardros
+gnuplot
+plot "./RecordedVelocity.txt"
+
+plot "./AngularSpeed.txt" using 1:3
 
 
 In Terminal 3:

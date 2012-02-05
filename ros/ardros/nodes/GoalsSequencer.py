@@ -4,7 +4,7 @@ Created January, 2012
 
 @author: Dr. Rainer Hessmer
 
-  DriveToGoals.py - This ROS nodes reads a sequence of goals from a text file
+  DriveToGoals.py - This ROS node reads a sequence of goals from a text file
   and then commands a robot running the ROS navigation stack to navigate to the
   goals in sequence.
 
@@ -312,7 +312,7 @@ class SimpleGoalsFileParser(object):
 		if nameValueParts[0].strip() != 'frame_id':
 			raise NameError('Expected variable name frame_id but found ' + nameValueParts[0].strip())
 		return nameValueParts[1].strip()
-    
+
 	def _ParseGoalLine(self, trimmedLine):
 		#print(trimmedLine)
 		lineParts = trimmedLine.split(',')
