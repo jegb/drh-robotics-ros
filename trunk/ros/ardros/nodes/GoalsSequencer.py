@@ -48,6 +48,32 @@ from actionlib_msgs.msg import GoalStatus
 from geometry_msgs.msg import Quaternion
 
 
+class GoalsParser(object):
+	''' 
+	Helper class for extracting goals from a text file that contains goals either in simplified form or as recorded output
+	from ros topic /move_base/goal. In case of the former format the class delegates the actual parsing to the class
+	SimpleGoalsFileParser, for the latter it uses the class RecordedGoalsParser.
+	'''
+
+	@staticmethod
+	def Parse(filePath):
+		usesRecordedGoalsFormat = False
+		with open(filePath, 'r') as file:
+			line = file.readline()
+			trimmedLine = line.strip()
+			if trimmedLine == 'header:':
+				usesRecordedGoalsFormat = True
+
+		if usesRecordedGoalsFormat:
+			goalsFileParser = RecordedGoalsParser()
+			(frameId, goals) = goalsFileParser.Parse(goalsFilePath)
+			return (frameId, goals)
+		else:
+			goalsFileParser = SimpleGoalsFileParser()
+			(frameId, goals) = goalsFileParser.Parse(goalsFilePath)
+			return (frameId, goals)
+
+
 class RecordedGoalsParser(object):
 	'''
 	Helper class for extracting goals from a text file that contains the output of the
@@ -129,17 +155,17 @@ class RecordedGoalsParser(object):
 		
 		self._GoalFrameId = '/map'
 		self._GoalsFilePath = filePath
-		file = open(filePath, 'r')
-		goals = []
+		with open(filePath, 'r') as file:
+			goals = []
+	
+			while True:
+				goal = self._ReadNextGoalSection(file)
+				if goal is None:
+					break
 		
-		while True:
-			goal = self._ReadNextGoalSection(file)
-			if goal is None:
-				break
-			
-			goals.append(goal)
-			# the next goal section starts after the line containing '---' which acts as a separater
-			file.readline()
+				goals.append(goal)
+				# the next goal section starts after the line containing '---' which acts as a separater
+				file.readline()
 			
 		return (self._GoalFrameId, goals)
 
@@ -238,7 +264,7 @@ class SimpleGoalsFileParser(object):
 	'''
 	Helper class for extracting goals from a text file. Here is a sample file content:
 
-  frame_id: /map
+	frame_id: /map
 	// End of first hall way leg
 	x: 0.705669820309, y: 3.92879199982, theta: -0.712161728691
 	x: 2.3, y: 0.4, theta: 1.1
@@ -251,19 +277,19 @@ class SimpleGoalsFileParser(object):
 		(frameId, [(x,y,theta)])
 		'''
 		self._GoalsFilePath = filePath
-		file = open(filePath, 'r')
-		frameId = None
-		goals = []
-		for line in file:
-			trimmedLine = line.strip()
-			if _IsCommentOrEmpty(trimmedLine):
-				continue
+		with open(filePath, 'r') as file:
+			frameId = None
+			goals = []
+			for line in file:
+				trimmedLine = line.strip()
+				if self._IsCommentOrEmpty(trimmedLine):
+					continue
 			
-			if frameId is None:
-				frameId = self._ParseFrameId(trimmedLine)
-			else
-				goal = self._ParseGoalLine(trimmedLine)
-				goals.append(goal)
+				if frameId is None:
+					frameId = self._ParseFrameId(trimmedLine)
+				else:
+					goal = self._ParseGoalLine(trimmedLine)
+					goals.append(goal)
 
 		return (frameId, goals)
 
@@ -282,7 +308,7 @@ class SimpleGoalsFileParser(object):
 		frame_id: /map
 		'''
 
-		nameValueParts = linePart.split(':')
+		nameValueParts = trimmedLine.split(':')
 		if nameValueParts[0].strip() != 'frame_id':
 			raise NameError('Expected variable name frame_id but found ' + nameValueParts[0].strip())
 		return nameValueParts[1].strip()
@@ -384,12 +410,10 @@ if __name__ == '__main__':
 		# we accept the path to the goals text file as a command line argument
 		goalsFilePath = sys.argv[1]
 
-	goalsFileParser = SimpleGoalsFileParser()
-	(frameId, goals) = goalsFileParser.Parse(goalsFilePath)
-	print(goals)
+
+	(frameId, goals) = GoalsParser.Parse(goalsFilePath)
+	print((frameId, goals))
 
 	goalsSequencer = GoalsSequencer(goalFrameId = frameId)
 	goalsSequencer.NavigateToGoals(goals)
-	
-	
 	
