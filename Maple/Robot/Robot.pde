@@ -15,7 +15,7 @@ const int c_RightServoOutPin = 9;    // Output pin that the servo is attached to
 Servo _LeftServo;
 Servo _RightServo;
 
-#define c_MaxMotorCV 90      // range is 0 ... 90 (half servo range)
+#define c_MaxMotorCV 45      // half servo range. The allowed values reach from 0 - c_MaxMotorCV to 0 + c_MaxMotorCV
 
 // container for robot params wheel diameter [m], trackwidth [m], ticks per revolution
 RobotParams _RobotParams = RobotParams();
