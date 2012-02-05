@@ -37,9 +37,11 @@ import tf
 from tf import transformations
 import time
 import math
-
+import sys
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+
+from velocityLogger import VelocityLogger
 
 class Driver(object):
 	'''
@@ -56,7 +58,7 @@ class Driver(object):
 		# wait for the listener to get the first transform message
 		self._TransformListener.waitForTransform("/odom", "/base_link", rospy.Time(), rospy.Duration(4.0))
 
-	def DriveX(self, distance, speed):
+	def driveX(self, distance, speed):
 		'''
 		Drive in x direction a specified distance based on odometry information
 		distance [m]: the distance to travel in the x direction (>0: forward, <0: backwards)
@@ -82,7 +84,7 @@ class Driver(object):
 			
 		velocityCommand.angular.z = 0.0 # no angular velocity
 
-		while True:
+		while not rospy.is_shutdown():
 			try:
 				(currentTranslation, currentRotation) = self._TransformListener.lookupTransform("/odom", "/base_link", rospy.Time(0))
 				
@@ -116,7 +118,7 @@ class Driver(object):
 		return done
 
 
-	def Turn(self, angle, angularSpeed):
+	def turn(self, angle, angularSpeed):
 		'''
 		Turn the robot based on odometry information
 		angle [rad]: the angle to turn (positive angles mean clockwise rotation)
@@ -190,14 +192,23 @@ class Driver(object):
 		return done
 
 if __name__ == '__main__':
+	velocityRecordingFilePath = "./RecordedVelocity.txt"
+	if (len(sys.argv) > 1):
+		# we accept the path to the goals text file as a command line argument
+		velocityRecordingFilePath = sys.argv[1]
+
+	velocityLogger = VelocityLogger(velocityRecordingFilePath)
 	try:
 		driver = Driver()
-		driver.DriveX(distance = 2, speed = 0.1);
-		driver.Turn(angle = math.pi, angularSpeed = 0.3);
-		driver.DriveX(distance = 2, speed = 0.1);
-		driver.Turn(angle = -math.pi, angularSpeed = 0.3)
-		#driver.Turn(angle = 3 * math.pi, angularSpeed = 0.3);
-	except rospy.ROSInterruptException:
-		pass
+		velocityLogger.start()
 
+		driver.driveX(distance = 0.5, speed = 0.5);
+		#driver.turn(angle = 2 * math.pi, angularSpeed = 1.0);
+		#driver.driveX(distance = 2, speed = 0.1);
+		#driver.turn(angle = -math.pi, angularSpeed = 0.3)
+		#driver.turn(angle = 3 * math.pi, angularSpeed = 0.3);
+	#except rospy.ROSInterruptException:
+		#pass
+	finally:
+		velocityLogger.close()
 
