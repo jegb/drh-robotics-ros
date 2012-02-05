@@ -124,12 +124,6 @@ rosrun rviz rviz -d `rospack find ardros`/rviz/navigation.vcg
 Set current pose and goal. Optionally monitor status:
 rostopic echo /move_base/status
 
-[Previously was:
-roscd ardros
-roslaunch ./launch/ardros_configuration.launch
-roslaunch ./launch/move_base.launch
-]
-
 
 Increase frequency of laser scan publishing:
 /home/rainer/ni/ni/pointcloud_to_laserscan/launch/kinect_laser.launch
