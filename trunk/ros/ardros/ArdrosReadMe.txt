@@ -99,11 +99,7 @@ Part 1:
 roscd ardros
 roslaunch ./launch/slam.launch
 
-Part 2: Launch rviz
-roscd ardros
-rosrun rviz rviz -d ./rviz/slam.vcg
-
-Part 3:
+Part 2:
 After driving around for a while, save the generated map:
 
 roscd ardros/maps
@@ -118,8 +114,6 @@ roslaunch `rospack find ardros`/launch/navigation.launch
 
 Note: You might need to change the path to the map in move_base.launch
 
-Part 2: Launch rviz
-rosrun rviz rviz -d `rospack find ardros`/rviz/navigation.vcg
 
 Set current pose and goal. Optionally monitor status:
 rostopic echo /move_base/status
@@ -131,6 +125,9 @@ Increase frequency of laser scan publishing:
     <param name="max_rate" value="10"/>
 
 Originally was 2
+
+rviz can also be started individually:
+rosrun rviz rviz -d `rospack find ardros`/rviz/navigation.vcg
 
 
 Listen to goals:
