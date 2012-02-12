@@ -36,8 +36,6 @@ Created January, 2012
 import roslib; roslib.load_manifest('ardros')
 import rospy
 import tf
-import math
-from math import sin, cos, pi
 import sys
 
 # Brings in the SimpleActionClient

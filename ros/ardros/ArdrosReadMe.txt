@@ -14,6 +14,9 @@ sudo apt-get install qtsixa
 
 Then: http://ubuntuforums.org/showpost.php?p=10360389&postcount=789
 
+in terminal:
+sudo sixad -s
+then hit PS button
 
 roscd ardros
 rosrun ardros DeadReckoning.py ./RecordedVelocity.txt
@@ -96,8 +99,7 @@ rosrun rviz rviz -d ./rviz/kinect.vcg
 
 SLAM:
 Part 1:
-roscd ardros
-roslaunch ./launch/slam.launch
+roslaunch `rospack find ardros`/launch/slam.launch
 
 Part 2:
 After driving around for a while, save the generated map:
@@ -108,7 +110,6 @@ rosrun map_server map_saver -f ./map
 
 
 Navigation:
-Part 1:
 
 roslaunch `rospack find ardros`/launch/navigation.launch
 

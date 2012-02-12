@@ -4,7 +4,7 @@ Created January, 2012
 
 @author: Dr. Rainer Hessmer
 
-  VelocityLogger.py - This ROS node subscribes to the /odom topic and logs
+  velocityLogger.py - This ROS node subscribes to the /odom topic and logs
   the linear and angular velocities with associated time stamps. This faciliates
   measuring the acceleration limits of the robot.
 
@@ -54,7 +54,7 @@ class VelocityLogger(object):
 		
 		self._StartTime = time.time()
 		self._LastTimestamp = startTime
-		rospy.Subscriber("/odom", Odometry, self._onOdomMessageReceived)
+		rospy.Subscriber(self._OdomTopic, Odometry, self._onOdomMessageReceived)
 
 	def _onOdomMessageReceived(self, data):
 		twist = data.twist.twist
